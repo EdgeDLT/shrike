@@ -1,6 +1,6 @@
 # Shrike
 
-Shrike is a set of tools built for the purpose of Neo blockchain data analysis. The infrastructure comprises of three components:
+Shrike is a set of tools built for the purpose of Neo blockchain data analysis. The infrastructure comprises three components:
 
 **Indexer** - Synchronizes a NeoGo node, retrieves blockchain data, and processes it into a relational DB.
 
@@ -69,8 +69,8 @@ Thanks to the [NeoGo](https://github.com/nspcc-dev/neo-go) team for their excell
 
 ## API
 
-TODO
+An Actix-web based service that performs various queries against indexed data. Only relatively basic queries are implemented so far. There is currently no caching for queries that only need to be performed once per block, it will scale very poorly to multiple users until then.
 
 ## GUI
 
-TODO
+A simple web application built using SolidJS (SolidStart) and PicoCSS. It was created to give a way for regular users to leverage Shrike, but power users will be better served by running custom queries against their own copy of the Shrike DB.
