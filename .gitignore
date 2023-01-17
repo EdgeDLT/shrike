@@ -1,0 +1,30 @@
+# api
+/shrike-api/target
+
+# indexer
+/shrike-indexer/target
+/shrike-indexer/chains
+/shrike-indexer/log/neogo.log
+/shrike-indexer/.env
+/shrike-indexer/neogo.exe
+/shrike-indexer/shrike.db3
+/shrike-indexer/shrike.db3-journal
+/shrike-indexer/todo.md
+/shrike-indexer/debug.log
+/shrike-indexer/readme.md.backup
+
+# gui
+/shrike-gui/dist
+/shrike-gui/.solid
+/shrike-gui/.output
+/shrike-gui/.vercel
+/shrike-gui/.netlify
+/shrike-gui/netlify
+/shrike-gui/node_modules
+/shrike-gui/.idea
+/shrike-gui/.project
+/shrike-gui/.classpath
+/shrike-gui/*.launch
+/shrike-gui/.settings/
+/shrike-gui/.DS_Store
+/shrike-gui/Thumbs.db
