@@ -1,6 +1,5 @@
 import { createEffect, createSignal } from "solid-js"
-
-const path = "http://127.0.0.1:8080/v1"
+import { API_PATH } from "../constants/index.js"
 
 export default function Stats() {
 
@@ -11,24 +10,24 @@ export default function Stats() {
     const [deployed, setDeployed] = createSignal(0)
 
     createEffect(async () => {
-        const blockRequest = await fetch("http://127.0.0.1:8080/v1/stat/total_blocks")
+        const blockRequest = await fetch(`${API_PATH}/stat/total_blocks`)
         const blockResponse = await blockRequest.json()
         setBlocks(blockResponse.total_blocks)
 
-        const transactionRequest = await fetch("http://127.0.0.1:8080/v1/stat/total_transactions")
+        const transactionRequest = await fetch(`${API_PATH}/stat/total_transactions`)
         const transactionResponse = await transactionRequest.json()
         setTransactions(transactionResponse.total_transactions)
 
 
-        const senderRequest = await fetch("http://127.0.0.1:8080/v1/stat/total_senders")
+        const senderRequest = await fetch(`${API_PATH}/stat/total_senders`)
         const senderResponse = await senderRequest.json()
         setSenders(senderResponse.total_senders)
 
-        const burnedRequest = await fetch("http://127.0.0.1:8080/v1/stat/total_sysfee")
+        const burnedRequest = await fetch(`${API_PATH}/stat/total_sysfee`)
         const burnedResponse = await burnedRequest.json()
         setBurned(burnedResponse.total_sysfee)
 
-        const deployedRequest = await fetch("http://127.0.0.1:8080/v1/stat/total_deploys")
+        const deployedRequest = await fetch(`${API_PATH}/stat/total_deploys`)
         const deployedResponse = await deployedRequest.json()
         setDeployed(deployedResponse.total_deploys)
     })

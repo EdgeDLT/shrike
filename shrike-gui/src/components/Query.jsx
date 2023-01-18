@@ -1,5 +1,5 @@
 import { createSignal, Match, Show } from "solid-js"
-const path = "http://127.0.0.1:8080/v1"
+import { API_PATH } from "../constants/index.js"
 
 const [activeResult, setActiveResult] = createSignal(0)
 const [queryResult, setQueryResult] = createSignal({})
@@ -28,7 +28,7 @@ function resetView() {
 
 async function fetchBlock() {
     let value = document.getElementById("getblock").value
-    let res = await fetch(`${path}/block/${value}`)
+    let res = await fetch(`${API_PATH}/block/${value}`)
     let block = await res.json()
     setQueryResult(flatten(block))
     setActiveResult(1)
@@ -36,7 +36,7 @@ async function fetchBlock() {
 
 async function fetchTransaction() {
     let value = document.getElementById("gettransaction").value
-    let res = await fetch(`${path}/transaction/${value}`)
+    let res = await fetch(`${API_PATH}/transaction/${value}`)
     let tx = await res.json()
     setQueryResult(flatten(tx))
     setActiveResult(1)

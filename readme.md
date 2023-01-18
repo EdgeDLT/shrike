@@ -69,8 +69,27 @@ Thanks to the [NeoGo](https://github.com/nspcc-dev/neo-go) team for their excell
 
 ## API
 
-An Actix-web based service that performs various queries against indexed data. Only relatively basic queries are implemented so far. There is currently no caching for queries that only need to be performed once per block, it will scale very poorly to multiple users until then.
+An Actix Web-based service that performs various queries against indexed data. Only relatively basic queries are implemented so far. There is currently no caching for queries that only need to be performed once per block, it will scale very poorly to multiple users until then.
+
+### Quickstart
+
+1. Clone or otherwise download the API folder.
+2. Get a copy of the Shrike DB from the download page (TODO) or by running the Indexer. Adjust the file path in `main.rs` via the `DB_PATH` constant.
+3. Use `cargo run` or `cargo run --release` to serve the API.
+4. Make your requests! The default path for the API when run locally is as follows: `http://127.0.0.1:8080/v1/module/method/parameter`.
+
+A hosted version will be provided in the future.
+
+### API Reference
+
+TODO
 
 ## GUI
 
 A simple web application built using SolidJS (SolidStart) and PicoCSS. It was created to give a way for regular users to leverage Shrike, but power users will be better served by running custom queries against their own copy of the Shrike DB.
+
+### Quickstart
+
+1. Clone or otherwise download the GUI folder.
+2. Run the API following the above instructions, or update the path in `/constants/index.js` to use the hosted version (coming soon).
+3. Serve the GUI locally with `npm run dev` and open it in your browser at `http://127.0.0.1:5173/`.
