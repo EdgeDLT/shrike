@@ -10,26 +10,25 @@ export default function Stats() {
     const [deployed, setDeployed] = createSignal(0)
 
     createEffect(async () => {
-        const blockRequest = await fetch(`${API_PATH}/stat/total_blocks`)
-        const blockResponse = await blockRequest.json()
-        setBlocks(blockResponse.total_blocks)
 
-        const transactionRequest = await fetch(`${API_PATH}/stat/total_transactions`)
-        const transactionResponse = await transactionRequest.json()
-        setTransactions(transactionResponse.total_transactions)
+        let stats = [
+            "total_blocks",
+            "total_transactions",
+            "total_senders",
+            "total_sysfee",
+            "total_deploys"
+        ]
 
+        const requests = stats.map(s => fetch(`${API_PATH}/stat/${s}`))
+        const unprocessedResponses = await Promise.all(requests)
+        const process = unprocessedResponses.map(r => r.json())
+        const responses = await Promise.all(process)
 
-        const senderRequest = await fetch(`${API_PATH}/stat/total_senders`)
-        const senderResponse = await senderRequest.json()
-        setSenders(senderResponse.total_senders)
-
-        const burnedRequest = await fetch(`${API_PATH}/stat/total_sysfee`)
-        const burnedResponse = await burnedRequest.json()
-        setBurned(burnedResponse.total_sysfee)
-
-        const deployedRequest = await fetch(`${API_PATH}/stat/total_deploys`)
-        const deployedResponse = await deployedRequest.json()
-        setDeployed(deployedResponse.total_deploys)
+        setBlocks(responses[0].total_blocks)
+        setTransactions(responses[1].total_transactions)
+        setSenders(responses[2].total_senders)
+        setBurned(responses[3].total_sysfee)
+        setDeployed(responses[4].total_deploys)
     })
 
     return (

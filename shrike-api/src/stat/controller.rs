@@ -63,6 +63,7 @@ async fn get_total_contracts(pool: web::Data<ConnectionPool>) -> impl Responder 
     HttpResponse::Ok().json(ContractCount { total_contracts: res.unwrap() })
 }
 
+// A transaction with multiple transfers will only be counted as one currently
 #[get("/v1/stat/total_transfers")]
 async fn get_total_transfers(pool: web::Data<ConnectionPool>) -> impl Responder {
     let con = &pool.connection.get().unwrap();
@@ -87,6 +88,7 @@ async fn get_total_senders(pool: web::Data<ConnectionPool>) -> impl Responder {
     HttpResponse::Ok().json(SenderCount { total_senders: res.unwrap() })
 }
 
+// If a transaction manages to deploy two or more contracts, this will miss the extras currently
 #[get("/v1/stat/total_deploys")]
 async fn get_total_deploys(pool: web::Data<ConnectionPool>) -> impl Responder {
     let con = &pool.connection.get().unwrap();
@@ -108,6 +110,7 @@ async fn get_total_deploys(pool: web::Data<ConnectionPool>) -> impl Responder {
     }
 }
 
+// If a transaction manages to invoke a contract more than once, this will miss the extras currently
 #[get("/v1/stat/total_invocations/{hash}")]
 async fn get_total_invocations(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
     let con = &pool.connection.get().unwrap();
