@@ -2,11 +2,11 @@
 
 Shrike is a set of tools built for the purpose of Neo blockchain data analysis. The infrastructure comprises three components:
 
-**Indexer** - Synchronizes a NeoGo node, retrieves blockchain data, and processes it into a relational DB.
+**[Indexer](https://github.com/EdgeDLT/shrike#indexer)** - Synchronizes a NeoGo node, retrieves blockchain data, and processes it into a relational DB.
 
-**API** - Serves a set of useful queries for indexed data over a REST API. Used to power the GUI and hopefully other third-party applications in the future.
+**[API](https://github.com/EdgeDLT/shrike#api)** - Serves a set of useful queries for indexed data over a REST API. Used to power the GUI and hopefully other third-party applications in the future.
 
-**GUI** - A simple web interface for interacting with the data made available by Shrike. A hosted version of this application may be found [here](https://google.com).
+**[GUI](https://github.com/EdgeDLT/shrike#gui)** - A simple web interface for interacting with the data made available by Shrike. A hosted version of this application may be found [here](https://google.com).
 
 You can find instructions on how to operate each of the components independently in the respective sections below.
 
@@ -69,7 +69,7 @@ Thanks to the [NeoGo](https://github.com/nspcc-dev/neo-go) team for their excell
 
 ## API
 
-An Actix Web-based service that performs various queries against indexed data. Only relatively basic queries are implemented so far. There is currently no caching for queries that only need to be performed once per block, it will scale very poorly to multiple users until then.
+An Actix Web-based service that performs various queries against indexed data and serves the responses. Only relatively basic queries are implemented so far. There is currently no caching for queries that only need to be performed once per block, it will scale very poorly to multiple users until then.
 
 ### Quickstart
 
