@@ -1,4 +1,4 @@
-import { createSignal, Match, Show } from "solid-js"
+import { createSignal, Match } from "solid-js"
 import { API_PATH } from "../constants/index.js"
 
 const [activeResult, setActiveResult] = createSignal(0)
@@ -12,7 +12,8 @@ function flatten(obj) {
             el[0] === "witnesses" ||
             el[0] === "signers" ||
             el[0] === "stack_result" ||
-            el[0] === "notifications"
+            el[0] === "notifications" ||
+            el[0] === "transactions"
             ) {
             return [el[0], JSON.stringify(el[1])]
         } else {
@@ -37,6 +38,14 @@ async function fetchBlock() {
 async function fetchTransaction() {
     let value = document.getElementById("gettransaction").value
     let res = await fetch(`${API_PATH}/transaction/${value}`)
+    let tx = await res.json()
+    setQueryResult(flatten(tx))
+    setActiveResult(1)
+}
+
+async function fetchBlockTransactions() {
+    let value = document.getElementById("getblocktransactions").value
+    let res = await fetch(`${API_PATH}/block/${value}/transactions`)
     let tx = await res.json()
     setQueryResult(flatten(tx))
     setActiveResult(1)
@@ -84,6 +93,20 @@ export default function Query() {
                             </label>
                         </form>
 
+                        <form onsubmit={(e)=>{e.preventDefault(); fetchBlockTransactions()}}>
+                            <label for="getblocktransactions">
+                                Get Block Transactions
+                                <input
+                                    type="text"
+                                    id="getblocktransactions"
+                                    name="getblocktransactions"
+                                    placeholder="0xeaa8a71a27a5172743100ba71e3bccafe951d641f5fb4bc5fcfb4cf91fcb43b4"
+                                    required
+                                >
+                                </input>
+                            </label>
+                        </form>
+
                         {/* <form onsubmit={(e)=>{e.preventDefault(); fetchInvocations()}}>
                             <label for="getinvocations">
                                 Get Total Contract Invocations
@@ -99,8 +122,8 @@ export default function Query() {
                         </form> */}
                     </Match>
                     <Match when={activeResult() === 1}>
-                        <table role="grid">
-                            <thead style="">
+                        <table role="">
+                            <thead>
                                 <tr>
                                     <th style="text-indent: 2em" colspan="2" scope="col"><b>Field</b></th>
                                     <th colspan="0" scope="col"><b>Value</b></th>
@@ -111,7 +134,7 @@ export default function Query() {
                                     <tr>
                                         <th scope="row"></th>
                                         <td>{a[0]}</td>
-                                        <td style="word-break: break-all">{a[1]}</td>
+                                        <td style="word-break: break-all"><code>{a[1]}</code></td>
                                     </tr>
                                 }</For>
                             </tbody>
