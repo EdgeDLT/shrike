@@ -7,7 +7,6 @@
 	- Option 1: Write a keep-alive script that spawns and kills the indexer every few seconds
 	- Option 2: Build a keep-alive mode directly into the indexer
 * Query sanitizing (integer & char limits, hex check, etc.)
-* Make get block call support hash as argument
 * Add more useful methods
 	- e.g. 1: Method to get all transfers by address
 	- e.g. 2: Method to get all transactions by block index/hash
