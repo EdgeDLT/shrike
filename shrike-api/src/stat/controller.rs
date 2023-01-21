@@ -74,16 +74,7 @@ async fn get_total_transfers(pool: web::Data<ConnectionPool>) -> impl Responder 
 
     let total: Result<u64, rusqlite::Error> = stmt.query_row([], |row| row.get(0));
 
-    match total {
-        Ok(transfers) => {
-            if transfers == 0 {
-                HttpResponse::Ok().json(Error { error: "No results found for that contract hash.".to_string() })
-            } else {
-                HttpResponse::Ok().json(TransferCount { total_transfers: transfers })
-            }
-        },
-        Err(_) => HttpResponse::Ok().json(Error { error: "Unknown error occurred.".to_string() })
-    }
+    HttpResponse::Ok().json(TransferCount { total_transfers: total.unwrap() })
 }
 
 #[get("/v1/stat/total_senders")]
