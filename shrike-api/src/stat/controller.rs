@@ -63,17 +63,27 @@ async fn get_total_contracts(pool: web::Data<ConnectionPool>) -> impl Responder 
     HttpResponse::Ok().json(ContractCount { total_contracts: res.unwrap() })
 }
 
-// A transaction with multiple transfers will only be counted as one currently
+// Catches all transfer events (NEP-17 and NEP-11)
 #[get("/v1/stat/total_transfers")]
 async fn get_total_transfers(pool: web::Data<ConnectionPool>) -> impl Responder {
     let con = &pool.connection.get().unwrap();
 
-    let sql = "SELECT COUNT() FROM transactions WHERE notifications LIKE '%Transfer%'";
+    let sql = "SELECT SUM(LENGTH(notifications) - LENGTH(REPLACE(notifications, 'Transfer', ''))) / 8 FROM transactions WHERE notifications LIKE '%Transfer%'";
+
     let mut stmt = con.prepare(sql).unwrap();
 
-    let res: Result<u64, rusqlite::Error> = stmt.query_row([], |row| row.get(0));
+    let total: Result<u64, rusqlite::Error> = stmt.query_row([], |row| row.get(0));
 
-    HttpResponse::Ok().json(TransferCount { total_transfers: res.unwrap() })
+    match total {
+        Ok(transfers) => {
+            if transfers == 0 {
+                HttpResponse::Ok().json(Error { error: "No results found for that contract hash.".to_string() })
+            } else {
+                HttpResponse::Ok().json(TransferCount { total_transfers: transfers })
+            }
+        },
+        Err(_) => HttpResponse::Ok().json(Error { error: "Unknown error occurred.".to_string() })
+    }
 }
 
 #[get("/v1/stat/total_senders")]

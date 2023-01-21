@@ -14,6 +14,7 @@
 
 * Make a separate table (view?) for transfers/contracts/balances and associated queries
 * Add DB download utility for easy data sharing
+* Contract validation/blacklisting (prevent stat manipulation via fake events)
 
 ### Frontend:
 

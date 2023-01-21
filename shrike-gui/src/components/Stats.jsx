@@ -8,6 +8,7 @@ export default function Stats() {
     const [senders, setSenders] = createSignal(0)
     const [burned, setBurned] = createSignal(0)
     const [deployed, setDeployed] = createSignal(0)
+    const [transfers, setTransfers] = createSignal(0)
 
     createEffect(async () => {
 
@@ -16,7 +17,8 @@ export default function Stats() {
             "total_transactions",
             "total_senders",
             "total_sysfee",
-            "total_deploys"
+            "total_deploys",
+            "total_transfers"
         ]
 
         const requests = stats.map(s => fetch(`${API_PATH}/stat/${s}`))
@@ -29,6 +31,7 @@ export default function Stats() {
         setSenders(responses[2].total_senders)
         setBurned(responses[3].total_sysfee)
         setDeployed(responses[4].total_deploys)
+        setTransfers(responses[5].total_transfers)
     })
 
     return (
@@ -91,6 +94,18 @@ export default function Stats() {
                             <Match when={deployed() !== 0}>
                                 <h4>{ deployed() }</h4>
                                 <h5>Total Contracts Deployed</h5>
+                            </Match>
+                        </Switch>
+                    </hgroup>
+                    <hgroup>
+                    <Switch>
+                            <Match when={transfers() == 0}>
+                                <h4 aria-busy="true"> </h4>
+                                <h5>Total Transfers</h5>
+                            </Match>
+                            <Match when={transfers() !== 0}>
+                                <h4>{ transfers() }</h4>
+                                <h5>Total Transfers</h5>
                             </Match>
                         </Switch>
                     </hgroup>
