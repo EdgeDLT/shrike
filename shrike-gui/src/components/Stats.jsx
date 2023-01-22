@@ -17,7 +17,7 @@ export default function Stats() {
             "total_transactions",
             "total_senders",
             "total_sysfee",
-            "total_deploys",
+            "total_contracts",
             "total_transfers"
         ]
 
@@ -30,7 +30,7 @@ export default function Stats() {
         setTransactions(responses[1].total_transactions)
         setSenders(responses[2].total_senders)
         setBurned(responses[3].total_sysfee)
-        setDeployed(responses[4].total_deploys)
+        setDeployed(responses[4].total_contracts)
         setTransfers(responses[5].total_transfers)
     })
 

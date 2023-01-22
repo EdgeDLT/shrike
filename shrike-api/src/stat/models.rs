@@ -21,11 +21,6 @@ pub struct InvocationCount {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct ContractCount {
-    pub total_contracts: u64
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct TransferCount {
     pub total_transfers: u64
 }
@@ -36,6 +31,6 @@ pub struct SenderCount {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct DeployCount {
-    pub total_deploys: u64
+pub struct ContractCount {
+    pub total_contracts: u64
 }
