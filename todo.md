@@ -2,7 +2,7 @@
 
 ### Backend:
 
-* Cache results of once-per-block calls (e.g. total GAS burned) for speed and scaling to many users
+* Improve cache with reset on new block
 * Write glue code to keep API synced
 	- Option 1: Write a keep-alive script that spawns and kills the indexer every few seconds
 	- Option 2: Build a keep-alive mode directly into the indexer
@@ -19,10 +19,8 @@
 
 * JSON to CSV converter for transfers by address
 * Add more methods and stats aimed at regular users
-* Write the about section and repo link
-* Meta descriptions for Lighthouse
 * Base58/64 decoding?
 * Prettify JSON values
 * Better errors
-* DB download page
+* Replace DB download link with a better download utility
 * Wallet support?

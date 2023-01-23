@@ -89,11 +89,11 @@ export default function Stats() {
                     <Switch>
                             <Match when={deployed() == 0}>
                                 <h4 aria-busy="true"> </h4>
-                                <h5>Total Contracts Deployed</h5>
+                                <h5>Total Contracts</h5>
                             </Match>
                             <Match when={deployed() !== 0}>
                                 <h4>{ deployed() }</h4>
-                                <h5>Total Contracts Deployed</h5>
+                                <h5>Total Contracts</h5>
                             </Match>
                         </Switch>
                     </hgroup>
