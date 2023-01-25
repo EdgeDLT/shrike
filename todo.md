@@ -3,9 +3,6 @@
 ### Backend:
 
 * Improve cache with reset on new block
-* Write glue code to keep API synced
-	- Option 1: Write a keep-alive script that spawns and kills the indexer every few seconds
-	- Option 2: Build a keep-alive mode directly into the indexer
 * Query sanitizing (integer & char limits, hex check, etc.)
 * Add more useful methods
 	- e.g. 1: Method to get all transfers by address
@@ -14,6 +11,7 @@
 * Make a separate table (view?) for transfers/contracts/balances and associated queries
 * Add DB download utility for easy data sharing
 * Contract validation/blacklisting (prevent stat manipulation via fake events)
+* Add graceful shutdown for SIGTERM
 
 ### Frontend:
 

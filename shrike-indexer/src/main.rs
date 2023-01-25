@@ -1,5 +1,7 @@
 use std::time::SystemTime;
+use tokio::time::{sleep, Duration};
 use reqwest::Client;
+use clap::Parser;
 
 mod db;
 mod spawn;
@@ -7,8 +9,20 @@ mod rpc;
 mod utils;
 mod neo;
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short, long, help = "Keeps Indexer alive and syncing new blocks", default_value_t = false)]
+    keep_alive: bool
+}
+
+const NEOGO_PATH: &str = "./neogo.exe";
+const SLEEP_INTERVAL: u64 = 5; // in seconds, used for keep-alive mode
+
 #[tokio::main]
 async fn main() {
+
+    let args = Args::parse();
 
     let start = SystemTime::now();
     println!("\nWelcome to Shrike!");
@@ -36,7 +50,7 @@ async fn main() {
     println!("Starting node sync..");
 
     let client = Client::new();
-    let node = spawn::NeoGo::new("./neogo.exe");
+    let node = spawn::NeoGo::new(NEOGO_PATH);
     let sync_future = node.sync_node().await.unwrap();
 
     let sync_end = SystemTime::now();
@@ -44,7 +58,7 @@ async fn main() {
     println!("Sync completed in {} ms.", sync_duration.as_millis());
 
     // Find the current chain height and stored height
-    let stored_height = db::get_last_block_index().unwrap();
+    let mut stored_height = db::get_last_block_index().unwrap();
     let current_height = rpc::get_current_height(&client).await -1;
     println!("Chain height is {}.", current_height);
 
@@ -86,6 +100,7 @@ Start height is {}.
                 current_height
             ).await;
 
+            stored_height = current_height;
             break;
         }
     }
@@ -94,8 +109,28 @@ Start height is {}.
     let index_duration = index_end.duration_since(index_start).unwrap();
     println!("Indexing completed in {} ms.", index_duration.as_millis());
 
+    if args.keep_alive == true {
+        loop {
+            sleep(Duration::from_secs(SLEEP_INTERVAL)).await;
+
+            let new_height = rpc::get_current_height(&client).await -1;
+
+            if new_height > stored_height {
+                utils::sync_between(
+                    &client,
+                    stored_height,
+                    new_height
+                ).await;
+
+                println!("Synced {} new block(s).", new_height-stored_height);
+                stored_height = new_height;
+            }
+        }
+    } else {
+        println!("Killing the node now.");
+    }
+
     // kill the node
-    println!("Killing the node now.");
     drop(sync_future);
 
 }

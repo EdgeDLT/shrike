@@ -33,9 +33,11 @@ The Indexer oversees three functions:
 ### Quickstart
 
 1. Clone or otherwise download the Indexer folder.
-2. Drop your NeoGo binary in the root directory (where `Cargo.toml` lives). On Windows, rename the binary to `neogo.exe`. On other platforms, you'll likely need to edit `main.rs` to use the correct path in `spawn::NeoGo::new()`.
+2. Drop your NeoGo binary in the root directory (where `Cargo.toml` lives). On Windows, rename the binary to `neogo.exe`. On other platforms, you'll likely need to edit `main.rs` to use the correct path in `NEOGO_PATH`.
 3. Open the root directory in a terminal and enter `cargo run --release` to build and run.
 4. Do something else for a while.
+
+A keep-alive mode has been added, which will keep the Indexer active and listening for blocks. Blocks are synced as soon as they are detected. This mode can be activated with the `-k` / `--keep-alive` flag, e.g. `cargo run --release -- -k`.
 
 ### Notes
 
