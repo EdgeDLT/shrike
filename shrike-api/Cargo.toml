@@ -13,3 +13,5 @@ rusqlite = { version = "0.28.0", features = ["bundled", "serde_json"] }
 r2d2 = "0.8.10"
 r2d2_sqlite = "0.21.0"
 actix-cors = "0.6.4"
+tokio = { version = "1.24.2", features = ["rt", "macros"] }
+futures = "0.3.25"
