@@ -16,11 +16,6 @@ pub struct TotalSystemFee {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct InvocationCount {
-    pub total_invocations: u64
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct TransferCount {
     pub total_transfers: u64
 }
@@ -32,5 +27,15 @@ pub struct SenderCount {
 
 #[derive(Serialize, Deserialize)]
 pub struct ContractCount {
+    pub total_contracts: u64
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ShrikeStats {
+    pub total_blocks: u64,
+    pub total_transactions: u64,
+    pub total_sysfee: f64,
+    pub total_transfers: u64,
+    pub total_senders: u64,
     pub total_contracts: u64
 }

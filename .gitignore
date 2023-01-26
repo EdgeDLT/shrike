@@ -11,6 +11,8 @@
 /shrike-indexer/neogo.exe
 /shrike-indexer/shrike.db3
 /shrike-indexer/shrike.db3-journal
+/shrike-indexer/shrike.db3-shm
+/shrike-indexer/shrike.db3-wal
 /shrike-indexer/todo.md
 /shrike-indexer/debug.log
 /shrike-indexer/readme.md.backup
