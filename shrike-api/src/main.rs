@@ -3,7 +3,10 @@ mod transaction;
 mod stat;
 mod error;
 
-use actix_web::{web, http::header, App, HttpServer};
+use std::time::Duration;
+
+use tokio::{task, time};
+use actix_web::{ web, http::header, App, HttpServer};
 use actix_cors::Cors;
 use rusqlite::OpenFlags;
 use r2d2::Pool;
@@ -11,7 +14,7 @@ use r2d2_sqlite::SqliteConnectionManager;
 
 const DB_PATH: &str = "../shrike-indexer/shrike.db3";
 
-struct ConnectionPool {
+pub struct ConnectionPool {
     connection: Pool<SqliteConnectionManager>
 }
 
@@ -24,6 +27,17 @@ async fn main() -> std::io::Result<()> {
 
     let connection_pool = web::Data::new(ConnectionPool {
         connection: pool
+    });
+
+    let internal_connection = connection_pool.clone();
+
+    task::spawn(async move {
+        let mut interval = time::interval(Duration::from_secs(5));
+        loop {
+            let c = internal_connection.clone();
+            interval.tick().await;
+            stat::internals::set_stats_internal(c).await;
+        }
     });
 
     HttpServer::new(move || {
