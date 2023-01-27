@@ -12,26 +12,15 @@ export default function Stats() {
 
     createEffect(async () => {
 
-        let stats = [
-            "total_blocks",
-            "total_transactions",
-            "total_senders",
-            "total_sysfee",
-            "total_contracts",
-            "total_transfers"
-        ]
+        let stat_request = fetch(`${API_PATH}/stat/stats`)
+        let stats = await (await stat_request).json()
 
-        const requests = stats.map(s => fetch(`${API_PATH}/stat/${s}`))
-        const unprocessedResponses = await Promise.all(requests)
-        const process = unprocessedResponses.map(r => r.json())
-        const responses = await Promise.all(process)
-
-        setBlocks(responses[0].total_blocks)
-        setTransactions(responses[1].total_transactions)
-        setSenders(responses[2].total_senders)
-        setBurned(responses[3].total_sysfee)
-        setDeployed(responses[4].total_contracts)
-        setTransfers(responses[5].total_transfers)
+        setBlocks(stats.total_blocks)
+        setTransactions(stats.total_transactions)
+        setSenders(stats.total_senders)
+        setBurned(stats.total_sysfee)
+        setDeployed(stats.total_contracts)
+        setTransfers(stats.total_transfers)
     })
 
     return (
