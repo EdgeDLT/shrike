@@ -2,7 +2,6 @@
 
 ### Backend:
 
-* Improve cache with reset on new block
 * Query sanitizing (integer & char limits, hex check, etc.)
 * Add more useful methods
 	- e.g. 1: Method to get all transfers by address

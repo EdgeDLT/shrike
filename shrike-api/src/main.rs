@@ -13,6 +13,7 @@ use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 
 const DB_PATH: &str = "../shrike-indexer/shrike.db3";
+const REFRESH_INTERVAL: u64 = 3; // how often we check for a new block and refresh stats in seconds
 
 pub struct ConnectionPool {
     connection: Pool<SqliteConnectionManager>
@@ -32,7 +33,7 @@ async fn main() -> std::io::Result<()> {
     let internal_connection = connection_pool.clone();
 
     task::spawn(async move {
-        let mut interval = time::interval(Duration::from_secs(5));
+        let mut interval = time::interval(Duration::from_secs(REFRESH_INTERVAL));
         loop {
             let c = internal_connection.clone();
             interval.tick().await;
