@@ -1,7 +1,7 @@
 use actix_web::{get, web, Responder, HttpResponse};
 use crate::ConnectionPool;
 use crate::error::Error;
-use super::models::{Block, BlockTransactions};
+use super::models::{Block, TransactionList};
 use crate::transaction::models::Transaction;
 
 #[get("/v1/block/{id}")]
@@ -101,7 +101,7 @@ async fn get_block_transactions(pool: web::Data<ConnectionPool>, path: web::Path
 
     match transactions.is_empty() {
         false => {
-            HttpResponse::Ok().json(BlockTransactions { transactions: transactions })
+            HttpResponse::Ok().json(TransactionList { transactions: transactions })
         },
         true => {
             HttpResponse::Ok().json(Error { error: "No transactions for that block.".to_string() })

@@ -19,6 +19,6 @@ pub struct Block {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct BlockTransactions {
+pub struct TransactionList {
     pub transactions: Vec<Transaction>,
 }

@@ -1,2 +1,2 @@
 pub mod controller;
-mod models;
+pub mod models;
