@@ -4,6 +4,7 @@ pub fn is_neo_address(string: &str) -> bool {
     string.chars().count() == 34 && string.starts_with("N") && string.chars().all(|c| ALPHABET.contains(&(c as u8)))
 }
 
+#[allow(dead_code)]
 pub fn is_neo_script_hash(string: &str) -> bool {
     string.chars().count() == 42 && string.starts_with("0x") && string.chars().skip(2).take(40).all(|c| c.is_digit(16))
 }
