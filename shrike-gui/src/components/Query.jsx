@@ -1,5 +1,6 @@
 import { createSignal, Match } from "solid-js"
 import { API_PATH } from "../constants/index.js"
+import { Checker } from "../helpers/checker.js"
 
 const [activeResult, setActiveResult] = createSignal(0)
 const [queryResult, setQueryResult] = createSignal({})
@@ -29,6 +30,14 @@ function resetView() {
 
 async function fetchBlock() {
     let value = document.getElementById("getblock").value
+
+    if (!Checker.isNeoTxidHash(value) && !Checker.isReasonableNumber(value)) {
+        document.getElementById("getblock").ariaInvalid = "true"
+        await new Promise(r => setTimeout(r, 2000));
+        document.getElementById("getblock").ariaInvalid = ""
+        return false
+     }
+
     let res = await fetch(`${API_PATH}/block/${value}`)
     let block = await res.json()
     setQueryResult(flatten(block))
@@ -37,6 +46,14 @@ async function fetchBlock() {
 
 async function fetchTransaction() {
     let value = document.getElementById("gettransaction").value
+
+    if (!Checker.isNeoTxidHash(value)) {
+        document.getElementById("gettransaction").ariaInvalid = "true"
+        await new Promise(r => setTimeout(r, 2000));
+        document.getElementById("gettransaction").ariaInvalid = ""
+        return false
+    }
+
     let res = await fetch(`${API_PATH}/transaction/${value}`)
     let tx = await res.json()
     setQueryResult(flatten(tx))
@@ -45,19 +62,19 @@ async function fetchTransaction() {
 
 async function fetchBlockTransactions() {
     let value = document.getElementById("getblocktransactions").value
+
+    if (!Checker.isNeoTxidHash(value)) {
+        document.getElementById("getblocktransactions").ariaInvalid = "true"
+        await new Promise(r => setTimeout(r, 2000));
+        document.getElementById("getblocktransactions").ariaInvalid = ""
+        return false
+    }
+
     let res = await fetch(`${API_PATH}/block/${value}/transactions`)
     let tx = await res.json()
     setQueryResult(flatten(tx))
     setActiveResult(1)
 }
-
-// async function fetchInvocations() {
-//     let value = document.getElementById("getinvocations").value
-//     let res = await fetch(`${path}/stat/total_invocations/${value}`)
-//     let invokes = await res.json()
-//     setQueryResult(flatten(invokes))
-//     setActiveResult(1)
-// }
 
 export default function Query() {
     return (
@@ -106,20 +123,6 @@ export default function Query() {
                                 </input>
                             </label>
                         </form>
-
-                        {/* <form onsubmit={(e)=>{e.preventDefault(); fetchInvocations()}}>
-                            <label for="getinvocations">
-                                Get Total Contract Invocations
-                                <input
-                                    type="text"
-                                    id="getinvocations"
-                                    name="getinvocations"
-                                    placeholder="0x24fc2b1bd77778dbbefb7c9c4fdb020a7aba6986"
-                                    required
-                                >
-                                </input>
-                            </label>
-                        </form> */}
                     </Match>
                     <Match when={activeResult() === 1}>
                         <table role="">
