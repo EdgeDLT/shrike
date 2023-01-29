@@ -3,7 +3,7 @@ use r2d2_sqlite::SqliteConnectionManager;
 
 use crate::error::Error;
 use crate::shared::events;
-use crate::shared::models::{Transaction, TransactionList, TransferDetails};
+use crate::shared::models::{Transaction, TransactionList, TxData};
 
 pub fn get_transaction_internal(conn: &PooledConnection<SqliteConnectionManager>, address: String) -> Result<Transaction, Error> {
     let sql = "SELECT * FROM transactions WHERE hash = ?";
@@ -71,13 +71,13 @@ pub fn get_sender_transactions_internal(conn: &PooledConnection<SqliteConnection
     }
 }
 
-pub fn get_sender_transfers_internal(conn: &PooledConnection<SqliteConnectionManager>, address: String) -> Result<Vec<TransferDetails>, Error> {
+pub fn get_sender_transfers_internal(conn: &PooledConnection<SqliteConnectionManager>, address: String) -> Result<Vec<TxData>, Error> {
 
     let transaction_list = get_sender_transactions_internal(conn, address)?;
-    let mut transfers: Vec<TransferDetails> = Vec::new();
+    let mut transfers: Vec<TxData> = Vec::new();
 
     for transaction in transaction_list.transactions {
-        transfers.push(events::get_all_nep17_transfers(transaction));
+        transfers.push(events::get_transfer_events(transaction));
     }
 
     if transfers.is_empty() {

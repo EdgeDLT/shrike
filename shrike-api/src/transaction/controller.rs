@@ -3,7 +3,7 @@ use actix_web::{get, web, Responder, HttpResponse};
 use crate::ConnectionPool;
 use crate::error::Error;
 use crate::shared::checker;
-use crate::shared::models::TransferList;
+use crate::shared::models::TxDataList;
 
 use super::internals;
 
@@ -53,7 +53,7 @@ async fn get_sender_transfers(pool: web::Data<ConnectionPool>, path: web::Path<S
     let transfers = internals::get_sender_transfers_internal(conn, address);
 
     match transfers {
-        Ok(txs) => HttpResponse::Ok().json(TransferList { events: txs}),
+        Ok(txs) => HttpResponse::Ok().json(TxDataList { transaction_events: txs}),
         Err(err) => HttpResponse::Ok().json(err)
     }
 }

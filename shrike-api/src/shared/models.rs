@@ -40,18 +40,20 @@ pub struct Transfer {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct TransferList {
-    pub events: Vec<TransferDetails>,
+pub struct TxData {
+    pub txid: String,
+    pub block_hash: String,
+    pub time: u64, // unix timestamp, set to 0 until I modify the db to store block time for transactions
+    pub sender: String,
+    pub sysfee: f64,
+    pub netfee: f64,
+    pub nep17_transfers: Vec<Transfer>,
+    pub nep11_transfers: Vec<Transfer>
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct TransferDetails {
-    pub txid: String,
-    pub block_hash: String,
-    pub sender: String,
-    pub sysfee: String,
-    pub netfee: String,
-    pub transfers: Vec<Transfer>
+pub struct TxDataList {
+    pub transaction_events: Vec<TxData>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
