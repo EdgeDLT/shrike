@@ -1,7 +1,5 @@
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
-use crate::transaction::models::Transaction;
-
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Block {
     pub index: u64,
@@ -18,7 +16,4 @@ pub struct Block {
     pub witnesses: Value
 }
 
-#[derive(Serialize, Deserialize, Clone)]
-pub struct TransactionList {
-    pub transactions: Vec<Transaction>,
-}
+

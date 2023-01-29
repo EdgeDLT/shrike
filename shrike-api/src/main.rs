@@ -2,9 +2,7 @@ mod block;
 mod transaction;
 mod stat;
 mod error;
-mod helpers;
-
-use std::time::Duration;
+mod shared;
 
 use tokio::{task, time};
 use actix_web::{ web, http::header, App, HttpServer};
@@ -12,6 +10,8 @@ use actix_cors::Cors;
 use rusqlite::OpenFlags;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
+
+use std::time::Duration;
 
 const DB_PATH: &str = "../shrike-indexer/shrike.db3";
 const REFRESH_INTERVAL: u64 = 3; // how often we check for a new block and refresh stats in seconds

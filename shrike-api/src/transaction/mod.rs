@@ -1,2 +1,2 @@
 pub mod controller;
-pub mod models;
+mod internals;

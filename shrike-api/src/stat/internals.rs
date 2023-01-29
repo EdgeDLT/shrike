@@ -1,14 +1,15 @@
 use actix_web::web;
 use tokio::task;
 use once_cell::sync::Lazy;
+use r2d2::PooledConnection;
+use r2d2_sqlite::SqliteConnectionManager;
 
 use std::sync::RwLock;
 
 use crate::ConnectionPool;
-use super::models::ShrikeStats;
+use crate::shared::models::NEO_PRECISION;
 
-use r2d2::PooledConnection;
-use r2d2_sqlite::SqliteConnectionManager;
+use super::models::ShrikeStats;
 
 pub static CURRENT_STATS: Lazy<RwLock<ShrikeStats>> = Lazy::new(|| {
     let s = ShrikeStats {
@@ -21,8 +22,6 @@ pub static CURRENT_STATS: Lazy<RwLock<ShrikeStats>> = Lazy::new(|| {
     };
     RwLock::new(s)
 });
-
-const PRECISION: f64 = 100000000.0;
 
 // Should be possible to make this generic but the way to do it in this context escapes me currently
 pub fn get_unsigned_stat_internal(conn: &PooledConnection<SqliteConnectionManager>, sql: &str) -> u64 {
@@ -108,7 +107,7 @@ pub fn get_transactions_internal(conn: &PooledConnection<SqliteConnectionManager
 
 pub fn get_sysfee_internal(conn: &PooledConnection<SqliteConnectionManager>) -> f64 {
     let sql = "SELECT sum(sysfee) FROM transactions";
-    get_floating_stat_internal(conn, sql) / PRECISION
+    get_floating_stat_internal(conn, sql) / NEO_PRECISION
 }
 
 pub fn get_transfers_internal(conn: &PooledConnection<SqliteConnectionManager>) -> u64 {

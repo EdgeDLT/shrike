@@ -1,10 +1,11 @@
 use actix_web::{get, web, Responder, HttpResponse};
+
 use crate::ConnectionPool;
 use crate::error::Error;
-use crate::transaction::models::Transaction;
-use crate::helpers::checker;
+use crate::shared::checker;
+use crate::shared::models::{Transaction, TransactionList};
 
-use super::models::{Block, TransactionList};
+use super::models::Block;
 
 #[get("/v1/block/{id}")]
 async fn get_block(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
