@@ -1,8 +1,10 @@
 use actix_web::{get, web, Responder, HttpResponse};
 use crate::ConnectionPool;
 use crate::error::Error;
-use super::models::{Block, TransactionList};
 use crate::transaction::models::Transaction;
+use crate::helpers::checker;
+
+use super::models::{Block, TransactionList};
 
 #[get("/v1/block/{id}")]
 async fn get_block(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
@@ -33,10 +35,15 @@ async fn get_block(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> 
 
             match result {
                 Ok(block) => HttpResponse::Ok().json(block),
-                Err(_) => HttpResponse::Ok().json(Error { error: "Block does not exist.".to_string() })
+                Err(_) => HttpResponse::Ok().json(Error { error: "Block not found.".to_string() })
             }
         },
         Err(_) => {
+
+            if !checker::is_neo_txid_hash(&hash) {
+                return HttpResponse::Ok().json(Error { error: "Invalid block hash.".to_string() });
+            }
+
             let sql = "SELECT * FROM blocks WHERE hash = ?";
             let mut stmt = con.prepare(sql).unwrap();
 
@@ -71,6 +78,10 @@ async fn get_block(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> 
 async fn get_block_transactions(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
     let con = &pool.connection.get().unwrap();
     let hash = path.into_inner();
+
+    if !checker::is_neo_txid_hash(&hash) {
+        return HttpResponse::Ok().json(Error { error: "Invalid block hash.".to_string() });
+    }
 
     let sql = "SELECT * FROM transactions WHERE block_hash = ?";
     let mut stmt = con.prepare(sql).unwrap();

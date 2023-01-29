@@ -2,12 +2,18 @@ use actix_web::{get, web, Responder, HttpResponse};
 use crate::ConnectionPool;
 use crate::error::Error;
 use crate::block::models::TransactionList;
+use crate::helpers::checker;
+
 use super::models::Transaction;
 
 #[get("/v1/transaction/{hash}")]
 async fn get_transaction(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
     let con = &pool.connection.get().unwrap();
     let hash = path.into_inner();
+
+    if !checker::is_neo_txid_hash(&hash) {
+        return HttpResponse::Ok().json(Error { error: "Invalid transaction hash.".to_string() })
+    }
 
     let sql = "SELECT * FROM transactions WHERE hash = ?";
     let mut stmt = con.prepare(sql).unwrap();
@@ -43,6 +49,10 @@ async fn get_transaction(pool: web::Data<ConnectionPool>, path: web::Path<String
 async fn get_sender_transactions(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
     let con = &pool.connection.get().unwrap();
     let address = path.into_inner();
+
+    if !checker::is_neo_address(&address) {
+        return HttpResponse::Ok().json(Error { error: "Invalid address.".to_string() })
+    }
 
     let sql = "SELECT * FROM transactions WHERE sender = ?";
     let mut stmt = con.prepare(sql).unwrap();

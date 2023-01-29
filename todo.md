@@ -2,7 +2,6 @@
 
 ### Backend:
 
-* Query sanitizing (integer & char limits, hex check, etc.)
 * Add more useful methods
 	- e.g. 1: Method to get all transfers by address
 	- e.g. 2: Method to get all transactions by block index/hash
@@ -21,3 +20,4 @@
 * Better errors
 * Replace DB download link with a better download utility
 * Wallet support?
+* Input checking

@@ -2,6 +2,7 @@ mod block;
 mod transaction;
 mod stat;
 mod error;
+mod helpers;
 
 use std::time::Duration;
 
