@@ -41,8 +41,8 @@ async fn get_sender_transactions(pool: web::Data<ConnectionPool>, path: web::Pat
     }
 }
 
-#[get("/v1/transaction/sender/{address}/transfers")]
-async fn get_sender_transfers(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
+#[get("/v1/transaction/transfers/{address}")]
+async fn get_address_transfers(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
     let conn = &pool.connection.get().unwrap();
     let address = path.into_inner();
 
@@ -50,7 +50,7 @@ async fn get_sender_transfers(pool: web::Data<ConnectionPool>, path: web::Path<S
         return HttpResponse::Ok().json(Error { error: "Invalid address.".to_string() })
     }
 
-    let transfers = internals::get_sender_transfers_internal(conn, address);
+    let transfers = internals::get_address_transfers_internal(conn, address);
 
     match transfers {
         Ok(txs) => HttpResponse::Ok().json(TxDataList { transaction_events: txs}),
@@ -62,5 +62,5 @@ pub fn config(cfg: &mut web::ServiceConfig) {
     cfg
         .service(get_transaction)
         .service(get_sender_transactions)
-        .service(get_sender_transfers);
+        .service(get_address_transfers);
 }

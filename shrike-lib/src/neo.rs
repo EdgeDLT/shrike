@@ -81,3 +81,51 @@ pub fn bytes_to_base58(bytes: &[u8]) -> String {
 
     result
 }
+
+// added this then realized I didn't need it... oh well, one day maybe
+pub fn base58_to_bytes(base58: &str) -> Vec<u8> {
+
+    let zcount = base58.chars().take_while(|x| *x == '1').count();
+    let size = (base58.len() - zcount) * 733 / 1000 + 1;
+    let mut buffer = vec![0u8; size];
+
+    let mut i = zcount;
+    let mut high = size - 1;
+
+    while i < base58.len() {
+        let mut carry = ALPHABET.iter().position(|&x| x == base58.as_bytes()[i]).unwrap() as u32;
+        let mut j = size - 1;
+
+        while j > high || carry != 0 {
+            carry += 58 * buffer[j] as u32;
+            buffer[j] = (carry % 256) as u8;
+            carry /= 256;
+
+            if j > 0 {
+                j -= 1;
+            }
+        }
+
+        i += 1;
+        high = j;
+    }
+
+    let mut j = buffer.iter().take_while(|x| **x == 0).count();
+
+    let mut result = Vec::new();
+    for _ in 0..zcount {
+        result.push(0);
+    }
+
+    while j < size {
+        result.push(buffer[j]);
+        j += 1;
+    }
+
+    result
+}
+
+pub fn address_to_base64(address: &str) -> String {
+    let bytes = base58_to_bytes(address);
+    base64::encode(&bytes[1..21])
+}

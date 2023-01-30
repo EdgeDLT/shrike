@@ -43,8 +43,7 @@ pub struct Transfer {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct TxData {
     pub txid: String,
-    pub block_hash: String,
-    pub time: u64, // unix timestamp, set to 0 until I modify the db to store block time for transactions
+    pub time: u64, // unix timestamp, extra call to set it until I modify the db to store block time for transactions
     pub sender: String,
     pub sysfee: f64,
     pub netfee: f64,

@@ -1,11 +1,14 @@
 use crate::shared::models::{Transfer, Transaction, TxData};
 
-use shrike_lib::neo::base64_to_address;
+use shrike_lib::neo;
 
 use super::models::{GAS_PRECISION, FUSDT_PRECISION};
 
-// this approach kinda sucks, we don't get inbound transfers and the code is a mess
-// needs improving later
+// now supports inbound and outbound (dictated by sender field and from/to, depending on requirements)
+// still needs work to support all contract decimals properly
+// also it may return tons of pointless transfer data for airdrops that include the address
+// not sure what to do about that right now, as we might not want to fully discount transfers
+// that do not have the specified address as from/to/sender (e.g. internal transfers on DEX swaps)
 pub fn get_transfer_events(tx: Transaction) -> TxData {
     let mut transfers = Vec::new();
     let notifications = tx.notifications.as_array().unwrap();
@@ -25,13 +28,13 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
             let to;
 
             if state["value"][0]["value"].is_string() {
-                from = base64_to_address(state["value"][0]["value"].as_str().unwrap());
+                from = neo::base64_to_address(state["value"][0]["value"].as_str().unwrap());
             } else {
                 from = "".to_string();
             }
 
             if state["value"][1]["value"].is_string() {
-                to = base64_to_address(state["value"][1]["value"].as_str().unwrap());
+                to = neo::base64_to_address(state["value"][1]["value"].as_str().unwrap());
             } else {
                 to = "".to_string();
             }
@@ -64,7 +67,6 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
 
     let transfer_events = TxData {
         txid: tx.hash,
-        block_hash: tx.block_hash,
         time: 0,
         sender: tx.sender,
         sysfee: tx.sysfee.parse::<f64>().unwrap() / GAS_PRECISION,
