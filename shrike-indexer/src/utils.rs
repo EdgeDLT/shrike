@@ -1,6 +1,8 @@
 use crate::rpc::{BlockResult, BlockAppLogResult, TransactionResult, TransactionAppLogResult, fetch_full_block, fetch_full_transaction};
 use crate::db::{Block, Transaction, insert_blocks_transactions};
-use crate::neo::{base64_to_scripthash, scripthash_to_address};
+
+use shrike_lib::neo::base64_to_address;
+
 use futures::future::join_all;
 use reqwest::Client;
 use serde_json::to_string;
@@ -68,7 +70,7 @@ pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
 
     let receiver = serde_json::to_string(block_receiver).unwrap();
     let stripped = &receiver[1..29];
-    let script_hash = base64_to_scripthash(stripped);
+    let address = base64_to_address(stripped);
 
     let db_block = Block {
         hash: r.hash,
@@ -80,7 +82,7 @@ pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
         speaker: r.primary,
         next_consensus: r.nextconsensus,
         reward: reward_as_float,
-        reward_receiver: scripthash_to_address(&script_hash),
+        reward_receiver: address,
         witnesses: to_string(&r.witnesses).unwrap()
     };
 

@@ -7,7 +7,6 @@ mod db;
 mod spawn;
 mod rpc;
 mod utils;
-mod neo;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -133,25 +132,6 @@ Start height is {}.
     // kill the node
     drop(sync_future);
 
-}
-
-mod shrike_tests {
-
-    #[test]
-    fn test_base64_decode() {
-        let test_string = "e6Kzuk8PbRM81V2ZgHneG4KX4zo=";
-        let hex = crate::neo::base64_to_scripthash(test_string);
-
-        assert_eq!(hex, "7ba2b3ba4f0f6d133cd55d998079de1b8297e33a");
-    }
-
-    #[test]
-    fn test_script_hash_to_address() {
-        let script_hash = "96949ed482e7c60aaeec691550f1b3d599146194";
-        let address = crate::neo::scripthash_to_address(script_hash);
-
-        assert_eq!(address, "NZeAarn3UMCqNsTymTMF2Pn6X7Yw3GhqDv");
-    }
 }
 
 

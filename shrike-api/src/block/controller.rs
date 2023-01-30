@@ -5,74 +5,19 @@ use crate::error::Error;
 use crate::shared::checker;
 use crate::shared::models::{Transaction, TransactionList};
 
-use super::models::Block;
+use super::internals;
 
 #[get("/v1/block/{id}")]
 async fn get_block(pool: web::Data<ConnectionPool>, path: web::Path<String>) -> impl Responder {
-    let con = &pool.connection.get().unwrap();
+    let conn = &pool.connection.get().unwrap();
     let hash = path.into_inner();
 
-    match hash.trim().parse::<u64>() {
-        Ok(id) => {
-            let sql = "SELECT * FROM blocks WHERE id = ?";
-            let mut stmt = con.prepare(sql).unwrap();
+    let result = internals::get_block_internal(conn, hash);
 
-            let result = stmt.query_row([id], |row| {
-                Ok(Block {
-                    index: row.get(0)?,
-                    hash: row.get(1)?,
-                    size: row.get(2)?,
-                    version: row.get(3)?,
-                    merkle_root: row.get(4)?,
-                    time: row.get(5)?,
-                    nonce: row.get(6)?,
-                    speaker: row.get(7)?,
-                    next_consensus: row.get(8)?,
-                    reward: row.get(9)?,
-                    reward_receiver: row.get(10)?,
-                    witnesses: row.get(11)?
-                })
-            });
-
-            match result {
-                Ok(block) => HttpResponse::Ok().json(block),
-                Err(_) => HttpResponse::Ok().json(Error { error: "Block not found.".to_string() })
-            }
-        },
-        Err(_) => {
-
-            if !checker::is_neo_txid_hash(&hash) {
-                return HttpResponse::Ok().json(Error { error: "Invalid block hash.".to_string() });
-            }
-
-            let sql = "SELECT * FROM blocks WHERE hash = ?";
-            let mut stmt = con.prepare(sql).unwrap();
-
-            let result = stmt.query_row([hash], |row| {
-                Ok(Block {
-                    index: row.get(0)?,
-                    hash: row.get(1)?,
-                    size: row.get(2)?,
-                    version: row.get(3)?,
-                    merkle_root: row.get(4)?,
-                    time: row.get(5)?,
-                    nonce: row.get(6)?,
-                    speaker: row.get(7)?,
-                    next_consensus: row.get(8)?,
-                    reward: row.get(9)?,
-                    reward_receiver: row.get(10)?,
-                    witnesses: row.get(11)?
-                })
-            });
-
-            match result {
-                Ok(block) => HttpResponse::Ok().json(block),
-                Err(_) => HttpResponse::Ok().json(Error { error: "Block does not exist.".to_string() })
-            }
-        }
+    match result {
+        Ok(block) => HttpResponse::Ok().json(block),
+        Err(_) => HttpResponse::Ok().json(Error { error: "Block does not exist.".to_string() })
     }
-
-
 }
 
 #[get("/v1/block/{id}/transactions")]

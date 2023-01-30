@@ -7,7 +7,7 @@ use r2d2_sqlite::SqliteConnectionManager;
 use std::sync::RwLock;
 
 use crate::ConnectionPool;
-use crate::shared::models::NEO_PRECISION;
+use crate::shared::models::GAS_PRECISION;
 
 use super::models::ShrikeStats;
 
@@ -107,7 +107,7 @@ pub fn get_transactions_internal(conn: &PooledConnection<SqliteConnectionManager
 
 pub fn get_sysfee_internal(conn: &PooledConnection<SqliteConnectionManager>) -> f64 {
     let sql = "SELECT sum(sysfee) FROM transactions";
-    get_floating_stat_internal(conn, sql) / NEO_PRECISION
+    get_floating_stat_internal(conn, sql) / GAS_PRECISION
 }
 
 pub fn get_transfers_internal(conn: &PooledConnection<SqliteConnectionManager>) -> u64 {

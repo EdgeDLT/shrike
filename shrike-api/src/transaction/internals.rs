@@ -1,6 +1,7 @@
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 
+use crate::block::internals;
 use crate::error::Error;
 use crate::shared::events;
 use crate::shared::models::{Transaction, TransactionList, TxData};
@@ -77,7 +78,10 @@ pub fn get_sender_transfers_internal(conn: &PooledConnection<SqliteConnectionMan
     let mut transfers: Vec<TxData> = Vec::new();
 
     for transaction in transaction_list.transactions {
-        transfers.push(events::get_transfer_events(transaction));
+        let block_time = internals::get_block_time(conn, transaction.block_hash.clone()).unwrap();
+        let mut tx_data = events::get_transfer_events(transaction);
+        tx_data.time = block_time;
+        transfers.push(tx_data);
     }
 
     if transfers.is_empty() {

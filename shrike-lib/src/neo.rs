@@ -1,6 +1,8 @@
 use base64;
 use sha2::{Sha256, Digest};
 
+pub const ALPHABET: &'static [u8] = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+
 pub fn base64_to_scripthash(encoded: &str) -> String {
     let bytes = base64::decode(encoded).unwrap();
     hex::encode(bytes)
@@ -20,6 +22,11 @@ pub fn scripthash_to_address(script_hash: &str) -> String {
     bytes_to_base58(&addr)
 }
 
+pub fn base64_to_address(encoded: &str) -> String {
+    let script_hash = base64_to_scripthash(encoded);
+    scripthash_to_address(&script_hash)
+}
+
 pub fn checksum(data: &[u8]) -> Vec<u8> {
     Sha256::digest(&Sha256::digest(&data)).to_vec()
 }
@@ -32,8 +39,6 @@ pub fn reverse_hex(hex: &str) -> String {
 
     hex::encode(value)
 }
-
-const ALPHABET: &'static [u8] = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 pub fn bytes_to_base58(bytes: &[u8]) -> String {
 

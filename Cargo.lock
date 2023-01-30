@@ -1455,6 +1455,7 @@ dependencies = [
  "rusqlite",
  "serde",
  "serde_json",
+ "shrike-lib",
  "tokio",
 ]
 
@@ -1462,17 +1463,24 @@ dependencies = [
 name = "shrike-indexer"
 version = "0.1.0"
 dependencies = [
- "base64 0.20.0",
  "clap",
  "dotenv",
  "futures",
- "hex",
  "reqwest",
  "rusqlite",
  "serde",
  "serde_json",
- "sha2",
+ "shrike-lib",
  "tokio",
+]
+
+[[package]]
+name = "shrike-lib"
+version = "0.1.0"
+dependencies = [
+ "base64 0.20.0",
+ "hex",
+ "sha2",
 ]
 
 [[package]]

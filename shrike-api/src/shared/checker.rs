@@ -1,4 +1,4 @@
-const ALPHABET: &'static [u8] = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+use shrike_lib::neo::ALPHABET;
 
 pub fn is_neo_address(string: &str) -> bool {
     string.chars().count() == 34 && string.starts_with("N") && string.chars().all(|c| ALPHABET.contains(&(c as u8)))

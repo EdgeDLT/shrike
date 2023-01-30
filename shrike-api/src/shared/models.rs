@@ -1,7 +1,8 @@
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
 
-pub const NEO_PRECISION: f64 = 100000000.0;
+pub const GAS_PRECISION: f64 = 100000000.0;
+pub const FUSDT_PRECISION: f64 = 1000000.0;
 
 pub type Hash160 = String;
 pub type Address = String;
