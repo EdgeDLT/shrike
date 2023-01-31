@@ -8,6 +8,8 @@ Shrike is a set of tools built for the purpose of Neo blockchain data analysis. 
 
 **[GUI](https://github.com/EdgeDLT/shrike#gui)** - A simple web interface for interacting with the data made available by Shrike. A hosted version of this application may be found [here](https://google.com).
 
+**[Lib](https://github.com/EdgeDLT/shrike#lib)** - A shared library for methods and models that are used across multiple Shrike components.
+
 You can find instructions on how to operate each of the components independently in the respective sections below.
 
 Pull requests and suggestions are welcomed in any of the components. There are innumerable ways to improve the code and broaden the featureset.
@@ -95,3 +97,7 @@ A simple web application built using SolidJS (SolidStart) and PicoCSS. It was cr
 1. Clone or otherwise download the GUI folder.
 2. Run the API following the above instructions, or update the path in `/constants/index.js` to use the hosted version (coming soon).
 3. Serve the GUI locally with `npm run dev` and open it in your browser at `http://127.0.0.1:5173/`.
+
+## LIB
+
+A shared library for Shrike components. It currently only contains Neo data conversion methods, but will be expanded with other functions and models over time when refactoring.

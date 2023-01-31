@@ -11,11 +11,11 @@ export class Fetcher {
             await new Promise(r => setTimeout(r, 2000));
             document.getElementById("getblock").ariaInvalid = ""
             return false
-         } else {
-            let res = await fetch(`${API_PATH}/block/${value}`)
-            let block = await res.json()
-            return Formatter.flattenObject(block)
          }
+
+        let res = await fetch(`${API_PATH}/block/${value}`)
+        let block = await res.json()
+        return Formatter.flattenObject(block)
     }
 
     static async transaction() {
