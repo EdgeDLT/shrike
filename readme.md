@@ -31,7 +31,8 @@ The Indexer oversees three functions:
 * The latest stable Rust version. I recommend using [Rustup](https://rustup.rs/).
 * (Optional) An SQLite-compatible DB browser/query editor. For simplicity I enjoy [DB Browser](https://sqlitebrowser.org/), going more advanced you might prefer [DBeaver](https://dbeaver.io/).
 
-Indexer has **not been tested** on any platform except Windows 10.
+Indexer is built with and therefore mostly tested on **Windows 10**. It should also work on other platforms, although I have only tested it on **Ubuntu 22.04 LTS**. To build Indexer on Ubuntu, you will also need to install a C linker, OpenSSL, and possibly pkg-config:
+`sudo apt install build-essential libssl-dev pkg-config`
 
 ### Quickstart
 
@@ -81,7 +82,7 @@ An Actix Web-based service that performs various queries against indexed data an
 1. Clone or otherwise download the API folder.
 2. Get a copy of the Shrike DB from the download page (TODO) or by running the Indexer. Adjust the file path in `main.rs` via the `DB_PATH` constant.
 3. Use `cargo run` or `cargo run --release` to serve the API.
-4. Make your requests! The default path for the API when run locally is as follows: `http://127.0.0.1:8080/v1/module/method/parameter`.
+4. Make your requests! The default path for the API when run locally is as follows: `http://0.0.0.0:8080/v1/module/method/parameter`.
 
 A hosted version will be provided in the future.
 

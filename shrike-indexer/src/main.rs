@@ -1,4 +1,4 @@
-use std::{time::SystemTime, path::Path, io};
+use std::{time::SystemTime, path::Path, io, env, fs, process::Command};
 use tokio::{time::{sleep, Duration}, fs::File, io::AsyncWriteExt};
 use reqwest::Client;
 use clap::Parser;
@@ -164,6 +164,15 @@ async fn check_neogo() -> io::Result<()> {
         let mut response = reqwest::get(NEOGO_DL).await.unwrap();
         while let Some(chunk) = response.chunk().await.unwrap() {
             file.write_all(&chunk).await?;
+        }
+
+        if env::consts::OS == "linux" {
+            println!("Updating permissions..");
+            Command::new("chmod")
+                .arg("+x")
+                .arg(NEOGO_PATH)
+                .output()
+                .expect("failed to update permissions");
         }
         println!("NeoGo installed.");
     }
