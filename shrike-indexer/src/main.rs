@@ -1,7 +1,8 @@
-use std::time::SystemTime;
-use tokio::time::{sleep, Duration};
+use std::{time::SystemTime, path::Path, io};
+use tokio::{time::{sleep, Duration}, fs::File, io::AsyncWriteExt};
 use reqwest::Client;
 use clap::Parser;
+use text_io::read;
 
 mod db;
 mod spawn;
@@ -15,7 +16,20 @@ struct Args {
     keep_alive: bool
 }
 
-const NEOGO_PATH: &str = "./neogo.exe";
+#[cfg(target_os = "macos")]
+static NEOGO_PATH: &str = "./neogo";
+#[cfg(target_os = "linux")]
+static NEOGO_PATH: &str = "./neogo";
+#[cfg(target_os = "windows")]
+static NEOGO_PATH: &str = "./neogo.exe";
+
+#[cfg(target_os = "macos")]
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-darwin-arm64";
+#[cfg(target_os = "linux")]
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-linux-amd64";
+#[cfg(target_os = "windows")]
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-windows-amd64.exe";
+
 const SLEEP_INTERVAL: u64 = 5; // in seconds, used for keep-alive mode
 
 #[tokio::main]
@@ -25,6 +39,9 @@ async fn main() {
 
     let start = SystemTime::now();
     println!("\nWelcome to Shrike!");
+
+    println!("Checking for NeoGo..");
+    check_neogo().await.unwrap();
 
     // fails if it already exists
     db::create_block_table();
@@ -134,4 +151,21 @@ Start height is {}.
 
 }
 
+async fn check_neogo() -> io::Result<()> {
+    let path = Path::new(NEOGO_PATH);
+    if !path.exists() {
+        println!("NeoGo not found in directory. Install? (y/n)");
+        let answer: char = read!();
+        if answer != 'y' {
+            panic!("User declined to install NeoGo.")
+        }
 
+        let mut file = File::create(path).await?;
+        let mut response = reqwest::get(NEOGO_DL).await.unwrap();
+        while let Some(chunk) = response.chunk().await.unwrap() {
+            file.write_all(&chunk).await?;
+        }
+        println!("NeoGo installed.");
+    }
+    Ok(())
+}

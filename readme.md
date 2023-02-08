@@ -29,14 +29,15 @@ The Indexer oversees three functions:
 ### Requirements
 
 * The latest stable Rust version. I recommend using [Rustup](https://rustup.rs/).
-* The NeoGo **v0.101.0** binary for your platform. Get that [here](https://github.com/nspcc-dev/neo-go/releases/tag/v0.101.0). Indexer has **not been tested** on any platform except Windows 10.
 * (Optional) An SQLite-compatible DB browser/query editor. For simplicity I enjoy [DB Browser](https://sqlitebrowser.org/), going more advanced you might prefer [DBeaver](https://dbeaver.io/).
+
+Indexer has **not been tested** on any platform except Windows 10.
 
 ### Quickstart
 
 1. Clone or otherwise download the Indexer folder.
-2. Drop your NeoGo binary in the root directory (where `Cargo.toml` lives). On Windows, rename the binary to `neogo.exe`. On other platforms, you'll likely need to edit `main.rs` to use the correct path in `NEOGO_PATH`.
-3. Open the root directory in a terminal and enter `cargo run --release` to build and run.
+2. Open the root directory in a terminal and enter `cargo run --release` to build and run.
+3. Follow the prompt to download NeoGo if you haven't already.
 4. Do something else for a while.
 
 A keep-alive mode has been added, which will keep the Indexer active and listening for blocks. Blocks are synced as soon as they are detected. This mode can be activated with the `-k` / `--keep-alive` flag, e.g. `cargo run --release -- -k`.
@@ -98,6 +99,6 @@ A simple web application built using SolidJS (SolidStart) and PicoCSS. It was cr
 2. Run the API following the above instructions, or update the path in `/constants/index.js` to use the hosted version (coming soon).
 3. Serve the GUI locally with `npm run dev` and open it in your browser at `http://127.0.0.1:5173/`.
 
-## LIB
+## Lib
 
 A shared library for Shrike components. It currently only contains Neo data conversion methods, but will be expanded with other functions and models over time when refactoring.
