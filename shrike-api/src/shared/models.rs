@@ -44,7 +44,6 @@ pub struct Transfer {
 pub struct TxData {
     pub txid: String,
     pub time: u64, // unix timestamp, extra call to set it until I modify the db to store block time for transactions
-    pub sender: String,
     pub sysfee: f64,
     pub netfee: f64,
     pub nep17_transfers: Vec<Transfer>,
@@ -53,7 +52,9 @@ pub struct TxData {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct TxDataList {
-    pub transaction_events: Vec<TxData>,
+    pub address: String,
+    pub as_sender: Vec<TxData>,
+    pub as_participant: Vec<TxData>
 }
 
 #[derive(Serialize, Deserialize, Clone)]

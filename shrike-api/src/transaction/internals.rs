@@ -1,12 +1,11 @@
+use shrike_lib::neo;
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 
 use crate::block::internals;
 use crate::error::Error;
 use crate::shared::events;
-use crate::shared::models::{Transaction, TransactionList, TxData};
-
-use shrike_lib::neo;
+use crate::shared::models::{Transaction, TransactionList, TxDataList};
 
 pub fn get_transaction_internal(conn: &PooledConnection<SqliteConnectionManager>, address: String) -> Result<Transaction, Error> {
     let sql = "SELECT * FROM transactions WHERE hash = ?";
@@ -74,7 +73,7 @@ pub fn get_sender_transactions_internal(conn: &PooledConnection<SqliteConnection
     }
 }
 
-pub fn get_address_transfers_internal(conn: &PooledConnection<SqliteConnectionManager>, address: String) -> Result<Vec<TxData>, Error> {
+pub fn get_address_transfers_internal(conn: &PooledConnection<SqliteConnectionManager>, address: String) -> Result<TxDataList, Error> {
 
     let base64 = neo::address_to_base64(&address);
     let sql = "SELECT * FROM transactions WHERE notifications LIKE ?";
@@ -104,17 +103,29 @@ pub fn get_address_transfers_internal(conn: &PooledConnection<SqliteConnectionMa
         })
     }
 
-    let mut transfers: Vec<TxData> = Vec::new();
+    let mut tx_list = TxDataList {
+        address: address.clone(),
+        as_sender: Vec::new(),
+        as_participant: Vec::new()
+    };
+
     for transaction in transactions {
+
+        let sender = transaction.clone().sender;
         let block_time = internals::get_block_time(conn, transaction.block_hash.clone()).unwrap();
         let mut tx_data = events::get_transfer_events(transaction);
         tx_data.time = block_time;
-        transfers.push(tx_data);
+
+        if sender == address {
+            tx_list.as_sender.push(tx_data);
+        } else {
+            tx_list.as_participant.push(tx_data);
+        }
     }
 
-    if transfers.is_empty() {
+    if tx_list.as_sender.is_empty() && tx_list.as_participant.is_empty() {
         Err(Error { error: "No transfers for that sender.".to_string() })
     } else {
-        Ok(transfers)
+        Ok(tx_list)
     }
 }

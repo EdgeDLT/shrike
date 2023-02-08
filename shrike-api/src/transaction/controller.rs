@@ -3,7 +3,6 @@ use actix_web::{get, web, Responder, HttpResponse};
 use crate::ConnectionPool;
 use crate::error::Error;
 use crate::shared::checker;
-use crate::shared::models::TxDataList;
 
 use super::internals;
 
@@ -50,10 +49,10 @@ async fn get_address_transfers(pool: web::Data<ConnectionPool>, path: web::Path<
         return HttpResponse::Ok().json(Error { error: "Invalid address.".to_string() })
     }
 
-    let transfers = internals::get_address_transfers_internal(conn, address);
+    let transfer_list = internals::get_address_transfers_internal(conn, address);
 
-    match transfers {
-        Ok(txs) => HttpResponse::Ok().json(TxDataList { transaction_events: txs}),
+    match transfer_list {
+        Ok(txs) => HttpResponse::Ok().json(txs),
         Err(err) => HttpResponse::Ok().json(err)
     }
 }

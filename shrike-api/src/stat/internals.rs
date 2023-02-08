@@ -23,24 +23,13 @@ pub static CURRENT_STATS: Lazy<RwLock<ShrikeStats>> = Lazy::new(|| {
     RwLock::new(s)
 });
 
-// Should be possible to make this generic but the way to do it in this context escapes me currently
-pub fn get_unsigned_stat_internal(conn: &PooledConnection<SqliteConnectionManager>, sql: &str) -> u64 {
+pub fn get_stat_internal<T: rusqlite::types::FromSql >(conn: &PooledConnection<SqliteConnectionManager>, sql: &str) -> T {
     let mut stmt = conn.prepare(sql).unwrap();
-    let total: Result<u64, rusqlite::Error> = stmt.query_row([], |row| row.get(0));
+    let total: Result<T, rusqlite::Error> = stmt.query_row([], |row| row.get(0));
 
     total.unwrap()
 }
 
-pub fn get_floating_stat_internal(conn: &PooledConnection<SqliteConnectionManager>, sql: &str) -> f64 {
-    let mut stmt = conn.prepare(sql).unwrap();
-    let total: Result<f64, rusqlite::Error> = stmt.query_row([], |row| row.get(0));
-
-    total.unwrap()
-}
-
-// Don't judge me. I can feel you judging me..
-// It was the only way I could figure out to make these damn calls happen in parallel!
-// The whole API is due a good refactor, I'll figure it out later...
 pub async fn set_stats_internal(pool:  web::Data<ConnectionPool>) {
     let conn1 = pool.connection.clone().get().unwrap();
 
@@ -97,31 +86,31 @@ pub async fn set_stats_internal(pool:  web::Data<ConnectionPool>) {
 
 pub fn get_blocks_internal(conn: &PooledConnection<SqliteConnectionManager>) -> u64 {
     let sql = "SELECT id FROM blocks WHERE id=(SELECT max(id) FROM blocks)";
-    get_unsigned_stat_internal(conn, sql)
+    get_stat_internal::<u64>(conn, sql)
 }
 
 pub fn get_transactions_internal(conn: &PooledConnection<SqliteConnectionManager>) -> u64 {
     let sql = "SELECT id FROM transactions WHERE id=(SELECT max(id) FROM transactions)";
-    get_unsigned_stat_internal(conn, sql)
+    get_stat_internal::<u64>(conn, sql)
 }
 
 pub fn get_sysfee_internal(conn: &PooledConnection<SqliteConnectionManager>) -> f64 {
     let sql = "SELECT sum(sysfee) FROM transactions";
-    get_floating_stat_internal(conn, sql) / GAS_PRECISION
+    get_stat_internal::<f64>(conn, sql) / GAS_PRECISION
 }
 
 pub fn get_transfers_internal(conn: &PooledConnection<SqliteConnectionManager>) -> u64 {
     let sql = "SELECT SUM(LENGTH(notifications) - LENGTH(REPLACE(notifications, 'Transfer', ''))) / 8 FROM transactions WHERE notifications LIKE '%Transfer%'";
-    get_unsigned_stat_internal(conn, sql)
+    get_stat_internal::<u64>(conn, sql)
 }
 
 pub fn get_senders_internal(conn: &PooledConnection<SqliteConnectionManager>) -> u64 {
     let sql = "SELECT COUNT(DISTINCT sender) FROM transactions";
-    get_unsigned_stat_internal(conn, sql)
+    get_stat_internal::<u64>(conn, sql)
 }
 
 pub fn get_contracts_internal(conn: &PooledConnection<SqliteConnectionManager>) -> u64 {
     let deploy_event = r#"'%"contract":"0xfffdc93764dbaddd97c48f252a53ea4643faa3fd","eventname":"Deploy"%'"#;
     let sql = "SELECT COUNT() FROM transactions WHERE notifications LIKE ".to_string() + deploy_event;
-    get_unsigned_stat_internal(conn, &sql) + 9 // fetch natives properly in future
+    get_stat_internal::<u64>(conn, &sql) + 9 // fetch natives properly in future
 }

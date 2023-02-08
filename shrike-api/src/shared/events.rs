@@ -68,7 +68,6 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
     let transfer_events = TxData {
         txid: tx.hash,
         time: 0,
-        sender: tx.sender,
         sysfee: tx.sysfee.parse::<f64>().unwrap() / GAS_PRECISION,
         netfee: tx.netfee.parse::<f64>().unwrap() / GAS_PRECISION,
         nep17_transfers: transfers,
