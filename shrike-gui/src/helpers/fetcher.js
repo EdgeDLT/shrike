@@ -47,4 +47,18 @@ export class Fetcher {
         let txList = await res.json()
         return Formatter.flattenObject(txList)
     }
+
+    static async addressTransfers() {
+        let value = document.getElementById("getaddresstransfers").value
+
+        if (!Checker.isNeoAddress(value)) {
+            document.getElementById("getaddresstransfers").ariaInvalid = "true"
+            await new Promise(r => setTimeout(r, 2000));
+            document.getElementById("getaddresstransfers").ariaInvalid = ""
+            return false
+        }
+
+        let res = await fetch(`${API_PATH}/transaction/transfers/${value}`)
+        return await res.json()
+    }
 }

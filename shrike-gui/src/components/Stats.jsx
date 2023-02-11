@@ -3,17 +3,7 @@ import { API_PATH } from "../constants/index.js"
 
 export default function Stats() {
 
-    const [blocks, setBlocks] = createSignal(0)
-    const [transactions, setTransactions] = createSignal(0)
-    const [senders, setSenders] = createSignal(0)
-    const [burned, setBurned] = createSignal(0)
-    const [deployed, setDeployed] = createSignal(0)
-    const [transfers, setTransfers] = createSignal(0)
-
-    onMount(async () => {
-
-        setInterval(async () => {
-
+    const fetchStats = async () => {
         let stat_request = fetch(`${API_PATH}/stat/stats`)
         let stats = await (await stat_request).json()
 
@@ -23,7 +13,21 @@ export default function Stats() {
         setBurned(stats.total_sysfee)
         setDeployed(stats.total_contracts)
         setTransfers(stats.total_transfers)
-    }, 5000)
+    }
+
+    const [blocks, setBlocks] = createSignal(0)
+    const [transactions, setTransactions] = createSignal(0)
+    const [senders, setSenders] = createSignal(0)
+    const [burned, setBurned] = createSignal(0)
+    const [deployed, setDeployed] = createSignal(0)
+    const [transfers, setTransfers] = createSignal(0)
+
+    onMount(async () => {
+
+        await fetchStats()
+        setInterval(async () => {
+            await fetchStats(), 5000
+        })
     })
 
     return (

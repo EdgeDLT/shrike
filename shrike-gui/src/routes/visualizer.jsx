@@ -1,11 +1,11 @@
 import Stats from "~/components/Stats"
-import Results from "~/components/Results"
+import Visualizer from "~/components/Visualizer"
 import About from "~/components/About"
 
 export default function Home() {
     return (
         <main>
-            <Results />
+            <Visualizer />
             <About />
         </main>
     )

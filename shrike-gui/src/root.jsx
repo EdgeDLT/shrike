@@ -12,6 +12,9 @@ import {
     Scripts,
     Title
 } from "solid-start"
+
+import Stats from "./components/Stats"
+
 import "./pico.min.css"
 export default function Root() {
 
@@ -50,6 +53,7 @@ export default function Root() {
                                 <h3>A data analysis tool for Neo</h3>
                             </hgroup>
                             <br />
+                        <Stats />
                         <Routes>
                             <FileRoutes />
                         </Routes>

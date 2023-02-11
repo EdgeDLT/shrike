@@ -67,6 +67,26 @@ export default function Query() {
                         </input>
                     </label>
                 </form>
+
+                <form onsubmit={async (e)=>{
+                    e.preventDefault();
+                    let result = await Fetcher.addressTransfers();
+                    if (result) {
+                        navigate("/visualizer", { state: result })
+                    }
+                }}>
+                    <label for="getaddresstransfers">
+                        Get transfers
+                        <input
+                            type="text"
+                            id="getaddresstransfers"
+                            name="getaddresstransfers"
+                            placeholder="NiFtgekYY6KY1XxwahVAyMtgX1WoJkrQXd"
+                            required
+                        >
+                        </input>
+                    </label>
+                </form>
             </section>
         </main>
     )
