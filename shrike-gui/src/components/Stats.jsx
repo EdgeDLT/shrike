@@ -1,4 +1,4 @@
-import { createEffect, createSignal } from "solid-js"
+import { createSignal, onMount } from "solid-js"
 import { API_PATH } from "../constants/index.js"
 
 export default function Stats() {
@@ -10,7 +10,9 @@ export default function Stats() {
     const [deployed, setDeployed] = createSignal(0)
     const [transfers, setTransfers] = createSignal(0)
 
-    createEffect(async () => {
+    onMount(async () => {
+
+        setInterval(async () => {
 
         let stat_request = fetch(`${API_PATH}/stat/stats`)
         let stats = await (await stat_request).json()
@@ -21,6 +23,7 @@ export default function Stats() {
         setBurned(stats.total_sysfee)
         setDeployed(stats.total_contracts)
         setTransfers(stats.total_transfers)
+    }, 5000)
     })
 
     return (
