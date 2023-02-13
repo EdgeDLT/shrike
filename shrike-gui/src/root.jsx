@@ -48,11 +48,11 @@ export default function Root() {
                         <a href="#" role="button" class="outline" style="float: right" onClick={() => toggleDarkMode()}>{themeIcon()}</a>
                     </div>
                     <article>
-                            <hgroup>
-                                <h2>Shrike</h2>
-                                <h3>A data analysis tool for Neo</h3>
-                            </hgroup>
-                            <br />
+                        <hgroup>
+                            <h2>Shrike</h2>
+                            <h3>A data analysis tool for Neo</h3>
+                        </hgroup>
+                        <br />
                         <Stats />
                         <Routes>
                             <FileRoutes />
