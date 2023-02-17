@@ -30,13 +30,13 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
             if state["value"][0]["value"].is_string() {
                 from = neo::base64_to_address(state["value"][0]["value"].as_str().unwrap());
             } else {
-                from = "".to_string();
+                from = "null".to_string();
             }
 
             if state["value"][1]["value"].is_string() {
                 to = neo::base64_to_address(state["value"][1]["value"].as_str().unwrap());
             } else {
-                to = "".to_string();
+                to = "null".to_string();
             }
 
             let qty = state["value"][2]["value"].as_str().unwrap();

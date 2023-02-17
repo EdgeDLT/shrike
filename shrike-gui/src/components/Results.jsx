@@ -7,6 +7,7 @@ export default function Results() {
     return (
         <main class="container">
             <section>
+                <h3>Results</h3>
                 <table role="">
                     <thead>
                         <tr>

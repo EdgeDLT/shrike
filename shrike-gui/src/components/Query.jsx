@@ -8,6 +8,7 @@ export default function Query() {
     return (
         <main class="container">
             <section>
+                <h3>Query</h3>
                 <form onsubmit={async (e)=>{
                     e.preventDefault();
                     let result = await Fetcher.block();

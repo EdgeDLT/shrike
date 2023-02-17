@@ -13,7 +13,7 @@ import {
     Title
 } from "solid-start"
 
-import Stats from "./components/Stats"
+import About from "./components/About"
 
 import "./pico.min.css"
 export default function Root() {
@@ -45,19 +45,14 @@ export default function Root() {
             <ErrorBoundary>
                 <main class="container">
                     <div style="padding-bottom: 1rem">
-                        <a href="#" role="button" class="outline" style="float: right" onClick={() => toggleDarkMode()}>{themeIcon()}</a>
+                        <a href="" role="button" class="outline" style="float: right" onClick={(e) => {
+                            e.preventDefault()
+                            toggleDarkMode()
+                        }}>{themeIcon()}</a>
                     </div>
-                    <article>
-                        <hgroup>
-                            <h2>Shrike</h2>
-                            <h3>A data analysis tool for Neo</h3>
-                        </hgroup>
-                        <br />
-                        <Stats />
-                        <Routes>
-                            <FileRoutes />
-                        </Routes>
-                    </article>
+                    <Routes>
+                        <FileRoutes />
+                    </Routes>
                 </main>
                 </ErrorBoundary>
             </Suspense>

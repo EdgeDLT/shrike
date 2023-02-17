@@ -51,7 +51,9 @@ export default function Stats() {
     return (
         <main class="container">
                 <hgroup>
-                    <h5>{ lastRefresh() }</h5>
+                    <h3>Stats</h3>
+                    <br />
+                    <h6>{ lastRefresh() }</h6>
                     <h6>Last Updated</h6>
                 </hgroup>
             <div style="grid-template-columns: 1fr 1fr 1fr" class="grid">
@@ -128,8 +130,6 @@ export default function Stats() {
                     </Switch>
                 </hgroup>
             </div>
-            <br />
         </main>
-
     )
 }
