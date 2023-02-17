@@ -42,20 +42,20 @@ export default function Visualizer() {
     return (
         <main class="container">
             <section>
-            <div>
-                <hgroup>
-                    <h3>Visualizer</h3>
-                    <br />
-                    <h5>{activeGraph()}</h5>
-                    <h6>{address()}</h6>
-                </hgroup>
-            </div>
-                <div class="container-fluid">
+                <div>
+                    <hgroup>
+                        <h3>Visualizer</h3>
+                        <br />
+                        <h5>{activeGraph()}</h5>
+                        <h6>{address()}</h6>
+                    </hgroup>
+                </div>
+                <div style="border: 2px solid; margin-bottom: 1rem" class="container-fluid">
                     <div style="height: 55vh" id="cyto"></div>
                 </div>
                 <div class="container">
                     <a
-                        href="#" role="button"  class="outline" onclick={
+                        href="#" role="button"  class="outline contrast" onclick={
                             (e) => {
                                 e.preventDefault()
                                 if (activeGraph() === "Sender") {
@@ -68,7 +68,7 @@ export default function Visualizer() {
                             }
                         }>Switch
                     </a>
-                    <A href="/" role="button" style="margin-left: 10px" class="outline">Back</A>
+                    <A href="/" role="button" style="margin-left: 10px" class="outline contrast">Back</A>
                 </div>
             </section>
         </main>

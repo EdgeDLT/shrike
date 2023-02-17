@@ -50,6 +50,10 @@ export default function Root() {
                             toggleDarkMode()
                         }}>{themeIcon()}</a>
                     </div>
+                    <hgroup>
+                        <h2>Shrike</h2>
+                        <h3>A data analysis tool for Neo</h3>
+                    </hgroup>
                     <Routes>
                         <FileRoutes />
                     </Routes>

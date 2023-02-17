@@ -6,14 +6,10 @@ export default function Home() {
         <main>
             <article>
                 <header>
-                    <hgroup>
-                        <h2>Shrike</h2>
-                        <h3>A data analysis tool for Neo</h3>
-                    </hgroup>
-                </header>
                     <Stats />
-                <footer>
+                </header>
                     <Query />
+                <footer>
                     <About />
                 </footer>
             </article>
