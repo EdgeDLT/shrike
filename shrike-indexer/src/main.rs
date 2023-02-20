@@ -66,8 +66,7 @@ async fn main() {
     println!("Starting node sync..");
 
     let client = Client::new();
-    let node = spawn::NeoGo::new(NEOGO_PATH);
-    let sync_future = node.sync_node().await.unwrap();
+    let sync_future = spawn::sync_node(NEOGO_PATH).await.unwrap();
 
     let sync_end = SystemTime::now();
     let sync_duration = sync_end.duration_since(start).unwrap();
