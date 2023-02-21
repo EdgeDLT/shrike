@@ -1,11 +1,19 @@
-use crate::rpc::{BlockResult, BlockAppLogResult, TransactionResult, TransactionAppLogResult, fetch_full_block, fetch_full_transaction};
-use crate::db::{Block, Transaction, insert_blocks_transactions};
-
-use shrike_lib::neo::base64_to_address;
-
 use futures::future::join_all;
 use reqwest::Client;
 use serde_json::to_string;
+
+use shrike_lib::neo::base64_to_address;
+
+use crate::rpc::{fetch_full_block, fetch_full_transaction};
+use crate::db::insert_blocks_transactions;
+use crate::models::{
+    Block,
+    Transaction,
+    BlockResult,
+    BlockAppLogResult,
+    TransactionResult,
+    TransactionAppLogResult
+};
 
 pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) {
 

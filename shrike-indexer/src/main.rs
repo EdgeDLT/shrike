@@ -8,6 +8,7 @@ mod db;
 mod spawn;
 mod rpc;
 mod utils;
+mod models;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -56,7 +57,7 @@ async fn main() {
         },
         Err(rusqlite::Error::QueryReturnedNoRows) => {
             println!("No rows in table yet. Adding first entry...");
-            db::insert_into_block_table(db::Block::genesis_block());
+            db::insert_into_block_table(models::Block::genesis_block());
             0
         },
         Err(err) => panic!("Something went wrong: {:?}", err),
