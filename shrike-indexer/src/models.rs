@@ -163,7 +163,7 @@ pub struct BlockResult {
     pub tx: Vec<TransactionResult>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct TransactionResult {
     pub hash: String,
     pub blockhash: Option<String>,
@@ -178,26 +178,6 @@ pub struct TransactionResult {
     pub script: String,
     pub witnesses: Vec<Witness>
 }
-
-impl Clone for TransactionResult {
-    fn clone(&self) -> Self {
-        TransactionResult {
-            hash: self.hash.clone(),
-            blockhash: self.blockhash.clone(),
-            size: self.size,
-            version: self.version,
-            nonce: self.nonce,
-            sender: self.sender.clone(),
-            sysfee: self.sysfee.clone(),
-            netfee: self.netfee.clone(),
-            validuntilblock: self.validuntilblock,
-            signers: self.signers.clone(),
-            script: self.script.clone(),
-            witnesses: self.witnesses.clone(),
-        }
-    }
-}
-
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum AppLogResult {
@@ -248,34 +228,15 @@ pub struct StateValue {
     pub value: Option<serde_json::Value>
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Witness {
     pub invocation: String,
     pub verification: String
 }
 
-impl Clone for Witness {
-    fn clone(&self) -> Self {
-        Witness {
-            invocation: self.invocation.clone(),
-            verification: self.verification.clone(),
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Signer {
     pub account: String,
     pub scopes: String,
     pub allowedcontracts: Option<Vec<String>>
-}
-
-impl Clone for Signer {
-    fn clone(&self) -> Self {
-        Signer {
-            account: self.account.clone(),
-            scopes: self.scopes.clone(),
-            allowedcontracts: self.allowedcontracts.clone(),
-        }
-    }
 }

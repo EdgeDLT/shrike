@@ -17,15 +17,11 @@ struct Args {
     keep_alive: bool
 }
 
-#[cfg(target_os = "macos")]
-static NEOGO_PATH: &str = "./neogo";
 #[cfg(target_os = "linux")]
 static NEOGO_PATH: &str = "./neogo";
 #[cfg(target_os = "windows")]
 static NEOGO_PATH: &str = "./neogo.exe";
 
-#[cfg(target_os = "macos")]
-static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-darwin-arm64";
 #[cfg(target_os = "linux")]
 static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-linux-amd64";
 #[cfg(target_os = "windows")]
@@ -49,7 +45,7 @@ async fn main() {
     db::create_transaction_table();
 
     // some setup
-    let index_result = db::get_last_block_index();
+    let index_result = db::get_last_index("blocks");
     match index_result {
         Ok(value) => {
             println!("Last stored block index: {}", value);
@@ -74,7 +70,7 @@ async fn main() {
     println!("Sync completed in {} ms.", sync_duration.as_millis());
 
     // Find the current chain height and stored height
-    let mut stored_height = db::get_last_block_index().unwrap();
+    let mut stored_height = db::get_last_index("blocks").unwrap();
     let current_height = rpc::get_current_height(&client).await -1;
     println!("Chain height is {}.", current_height);
 

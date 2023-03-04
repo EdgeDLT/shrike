@@ -27,23 +27,6 @@ pub fn create_block_table() -> usize {
         )", []).unwrap()
 }
 
-#[allow(dead_code)]
-pub fn drop_block_table() -> usize {
-    let conn = connect_to_db();
-
-    conn.execute("DROP TABLE blocks", []).unwrap()
-}
-
-pub fn get_last_block_index() -> Result<u64, Error> {
-    let conn = connect_to_db();
-    let sql = "SELECT id FROM blocks WHERE id=(SELECT max(id) FROM blocks)";
-
-    let mut stmt = conn.prepare(sql).unwrap();
-    let index: Result<u64, Error> = stmt.query_row([], |row| row.get(0));
-
-    Ok(index?)
-}
-
 pub fn insert_into_block_table(block: models::Block) {
     let conn = connect_to_db();
     let sql = "INSERT INTO blocks (
@@ -87,51 +70,6 @@ pub fn create_transaction_table() -> usize {
         stack_result        TEXT,
         notifications       TEXT
         )", []).unwrap()
-}
-
-#[allow(dead_code)]
-pub fn drop_transaction_table() -> usize {
-    let conn = connect_to_db();
-
-    conn.execute("DROP TABLE transactions", []).unwrap()
-}
-
-#[allow(dead_code)]
-pub fn get_last_transaction_index() -> Result<u64, Error> {
-    let conn = connect_to_db();
-    let sql = "SELECT id FROM transactions WHERE id=(SELECT max(id) FROM transactions)";
-
-    let mut stmt = conn.prepare(sql).unwrap();
-    let index: Result<u64, Error> = stmt.query_row([], |row| row.get(0));
-
-    Ok(index?)
-}
-
-#[allow(dead_code)]
-pub fn insert_into_transaction_table(transaction: models::Transaction) {
-    let conn = connect_to_db();
-    let sql = "INSERT INTO transactions (
-        hash, block_hash, vm_state, size, version, nonce, sender, sysfee, netfee,
-        valid_until, signers, script, witnesses, stack_result, notifications
-    ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)";
-
-    conn.execute(sql, params![
-        transaction.hash,
-        transaction.block_hash,
-        transaction.vm_state,
-        transaction.size,
-        transaction.version,
-        transaction.nonce,
-        transaction.sender,
-        transaction.sysfee,
-        transaction.netfee,
-        transaction.valid_until,
-        transaction.signers,
-        transaction.script,
-        transaction.witnesses,
-        transaction.stack_result,
-        transaction.notifications
-    ]).unwrap();
 }
 
 // ugly but gives an extra speed up
@@ -185,4 +123,21 @@ pub fn insert_blocks_transactions(blocks: impl Iterator<Item = models::Block>, t
         ])?;
     }
     tx.commit()
+}
+
+pub fn get_last_index(table: &str) -> Result<u64, Error> {
+    let conn = connect_to_db();
+    let sql = &format!("SELECT id FROM {} WHERE id=(SELECT max(id) FROM {})", table, table);
+
+    let mut stmt = conn.prepare(sql).unwrap();
+    let index: Result<u64, Error> = stmt.query_row([], |row| row.get(0));
+
+    Ok(index?)
+}
+
+#[allow(dead_code)]
+pub fn drop_table(table: &str) -> usize {
+    let conn = connect_to_db();
+
+    conn.execute(&format!("DROP TABLE {}", table), []).unwrap()
 }

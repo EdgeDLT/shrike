@@ -1,4 +1,4 @@
-use reqwest::Client;
+use reqwest::{Client, Response, Error};
 
 use crate::models::{
     BlockResponse,
@@ -18,65 +18,52 @@ use crate::models::{
 // NeoGo default
 const NODE_PATH: &str = "http://localhost:10332";
 
+pub async fn get_response(client: &Client, request: RpcRequest<NeoParam>) -> Result<Response, Error> {
+    Ok(client.post(NODE_PATH)
+        .json(&request)
+        .send()
+        .await
+        .unwrap())
+}
+
+pub fn build_request(method: &str, args: Vec<NeoParam>) -> RpcRequest<NeoParam> {
+    RpcRequest {
+        jsonrpc: "2.0".to_string(),
+        method: method.to_string(),
+        params: args,
+        id: 1
+    }
+}
+
+pub async fn parse_response<NeoResponse: for<'de> serde::Deserialize<'de>>(response: Response) -> NeoResponse {
+    response.json::<NeoResponse>().await.unwrap()
+}
+
 pub async fn neo_fetch(client: &Client, method: NeoMethod, arg: NeoParam) -> NeoResponse {
     match method {
         NeoMethod::GetBlock => {
             let args = vec![arg, NeoParam::Integer(1)];
-            let request = RpcRequest {
-                jsonrpc: "2.0".to_string(),
-                method: "getblock".to_string(),
-                params: args,
-                id: 1,
-            };
+            let request = build_request("getblock", args);
+            let response = get_response(client, request).await.unwrap();
+            let json = parse_response::<BlockResponse>(response).await;
 
-            let response = client.post(NODE_PATH)
-                .json(&request)
-                .send()
-                .await
-                .unwrap()
-                .json::<BlockResponse>()
-                .await;
-
-            NeoResponse::BlockResponse(response.unwrap())
+            NeoResponse::BlockResponse(json)
         },
         NeoMethod::GetApplicationLog => {
-            let mut args = Vec::new();
-            args.push(arg);
-            let request = RpcRequest {
-                jsonrpc: "2.0".to_string(),
-                method: "getapplicationlog".to_string(),
-                params: args,
-                id: 1
-            };
+            let args = vec![arg];
+            let request = build_request("getapplicationlog", args);
+            let response = get_response(client, request).await.unwrap();
+            let json = parse_response::<ApplicationLogResponse>(response).await;
 
-            let response = client.post(NODE_PATH)
-                .json(&request)
-                .send()
-                .await
-                .unwrap()
-                .json::<ApplicationLogResponse>()
-                .await;
-
-            NeoResponse::ApplicationLogResponse(response.unwrap())
+            NeoResponse::ApplicationLogResponse(json)
         },
         NeoMethod::GetBlockCount => {
             let args: Vec<NeoParam> = Vec::new();
-            let request = RpcRequest {
-                jsonrpc: "2.0".to_string(),
-                method: "getblockcount".to_string(),
-                params: args,
-                id: 1
-            };
+            let request = build_request("getblockcount", args);
+            let response = get_response(client, request).await.unwrap();
+            let json = parse_response::<BlockCountResponse>(response).await;
 
-            let response = client.post(NODE_PATH)
-                .json(&request)
-                .send()
-                .await
-                .unwrap()
-                .json::<BlockCountResponse>()
-                .await;
-
-            NeoResponse::BlockCountResponse(response.unwrap())
+            NeoResponse::BlockCountResponse(json)
         }
     }
 }
