@@ -55,16 +55,16 @@ impl Block {
 
 // RPC
 pub enum NeoMethod {
-    GetBlock,
-    GetApplicationLog,
-    GetBlockCount
+    Block,
+    ApplicationLog,
+    BlockCount
 }
 
 #[derive(Debug)]
 pub enum NeoResponse {
-    BlockResponse(BlockResponse),
-    ApplicationLogResponse(ApplicationLogResponse),
-    BlockCountResponse(BlockCountResponse)
+    Block(BlockResponse),
+    ApplicationLog(ApplicationLogResponse),
+    BlockCount(BlockCountResponse)
 }
 
 #[derive(Debug)]
@@ -134,7 +134,7 @@ impl<'de> Deserialize<'de> for ApplicationLogResponse {
 
         let helper = Helper::deserialize(deserializer)?;
 
-        let result = if let Some(_) = helper.result.get("blockhash") {
+        let result = if helper.result.get("blockhash").is_some() {
             AppLogResult::BlockAppLogResult(Deserialize::deserialize(helper.result).unwrap())
         } else {
             AppLogResult::TransactionAppLogResult(Deserialize::deserialize(helper.result).unwrap())

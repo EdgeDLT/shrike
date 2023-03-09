@@ -1,7 +1,7 @@
 use base64;
 use sha2::{Sha256, Digest};
 
-pub const ALPHABET: &'static [u8] = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+pub const ALPHABET: &[u8] = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 pub fn base64_to_scripthash(encoded: &str) -> String {
     let bytes = base64::decode(encoded).unwrap();
@@ -28,7 +28,7 @@ pub fn base64_to_address(encoded: &str) -> String {
 }
 
 pub fn checksum(data: &[u8]) -> Vec<u8> {
-    Sha256::digest(&Sha256::digest(&data)).to_vec()
+    Sha256::digest(Sha256::digest(data)).to_vec()
 }
 
 #[allow(dead_code)]
@@ -59,7 +59,7 @@ pub fn bytes_to_base58(bytes: &[u8]) -> String {
             carry /= 58;
 
             if j > 0 {
-                j -= 1;
+                j = j.saturating_sub(1);
             }
         }
 
@@ -83,6 +83,7 @@ pub fn bytes_to_base58(bytes: &[u8]) -> String {
 }
 
 // added this then realized I didn't need it... oh well, one day maybe
+#[allow(clippy::same_item_push)]
 pub fn base58_to_bytes(base58: &str) -> Vec<u8> {
 
     let zcount = base58.chars().take_while(|x| *x == '1').count();
@@ -102,7 +103,7 @@ pub fn base58_to_bytes(base58: &str) -> Vec<u8> {
             carry /= 256;
 
             if j > 0 {
-                j -= 1;
+                j = j.saturating_sub(1);
             }
         }
 

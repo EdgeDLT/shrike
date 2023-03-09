@@ -58,7 +58,7 @@ async fn get_block_transactions(pool: web::Data<ConnectionPool>, path: web::Path
 
     match transactions.is_empty() {
         false => {
-            HttpResponse::Ok().json(TransactionList { transactions: transactions })
+            HttpResponse::Ok().json(TransactionList { transactions })
         },
         true => {
             HttpResponse::Ok().json(Error { error: "No transactions for that block.".to_string() })

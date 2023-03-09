@@ -24,20 +24,18 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
             && state["value"][2]["type"] == "Integer" {
 
             let contract = notification["contract"].as_str().unwrap().to_string();
-            let from;
-            let to;
 
-            if state["value"][0]["value"].is_string() {
-                from = neo::base64_to_address(state["value"][0]["value"].as_str().unwrap());
+            let from = if state["value"][0]["value"].is_string() {
+                neo::base64_to_address(state["value"][0]["value"].as_str().unwrap())
             } else {
-                from = "null".to_string();
-            }
+                "null".to_string()
+            };
 
-            if state["value"][1]["value"].is_string() {
-                to = neo::base64_to_address(state["value"][1]["value"].as_str().unwrap());
+            let to = if state["value"][1]["value"].is_string() {
+                neo::base64_to_address(state["value"][1]["value"].as_str().unwrap())
             } else {
-                to = "null".to_string();
-            }
+                "null".to_string()
+            };
 
             let qty = state["value"][2]["value"].as_str().unwrap();
 
@@ -65,13 +63,12 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
         }
     }
 
-    let transfer_events = TxData {
+    TxData {
         txid: tx.hash,
         time: 0,
         sysfee: tx.sysfee.parse::<f64>().unwrap() / GAS_PRECISION,
         netfee: tx.netfee.parse::<f64>().unwrap() / GAS_PRECISION,
         nep17_transfers: transfers,
         nep11_transfers: Vec::new()
-    };
-    transfer_events
+    }
 }

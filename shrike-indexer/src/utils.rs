@@ -18,13 +18,13 @@ use crate::models::{
 pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) {
 
     let future_blocks = (start_height..end_height)
-        .map(|i| fetch_full_block(&client, i));
+        .map(|i| fetch_full_block(client, i));
     let all_blocks = join_all(future_blocks).await;
 
     // Have to clone to keep all_blocks unmoved for future steps
     let transactions: Vec<TransactionResult> = all_blocks
         .iter()
-        .map(|(block, _)| {
+        .flat_map(|(block, _)| {
             block.tx
                 .iter()
                 .map(|tx| {
@@ -45,12 +45,11 @@ pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) {
                 })
                 .collect::<Vec<TransactionResult>>()
         })
-        .flatten()
         .collect();
 
     let future_transactions = transactions
         .into_iter()
-        .map(|tx| fetch_full_transaction(&client, tx));
+        .map(|tx| fetch_full_transaction(client, tx));
     let all_transactions = join_all(future_transactions).await;
 
     let prepped_blocks = all_blocks
@@ -74,13 +73,13 @@ pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
 
     let reward_string = block_reward.clone().unwrap().as_str().unwrap().to_string();
     let reward = reward_string.parse::<u64>().unwrap();
-    let reward_as_float = reward as f64 / 100000000 as f64;
+    let reward_as_float = reward as f64 / 100000000_f64;
 
     let receiver = serde_json::to_string(block_receiver).unwrap();
     let stripped = &receiver[1..29];
     let address = base64_to_address(stripped);
 
-    let db_block = Block {
+    Block {
         hash: r.hash,
         size: r.size,
         version: r.version,
@@ -92,9 +91,7 @@ pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
         reward: reward_as_float,
         reward_receiver: address,
         witnesses: to_string(&r.witnesses).unwrap()
-    };
-
-    db_block
+    }
 }
 
 pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResult) -> Transaction {
@@ -103,7 +100,7 @@ pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResu
     let stack = &a.executions[0].stack;
     let notifs = &a.executions[0].notifications;
 
-    let db_tx = Transaction {
+    Transaction {
         hash: t.hash,
         block_hash: t.blockhash.unwrap(),
         vm_state: state.to_string(),
@@ -119,7 +116,5 @@ pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResu
         witnesses: to_string(&t.witnesses).unwrap(),
         stack_result: to_string(&stack).unwrap(),
         notifications: to_string(&notifs).unwrap()
-    };
-
-    db_tx
+    }
 }

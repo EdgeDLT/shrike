@@ -5,7 +5,7 @@ pub struct Error {
     pub error: String
 }
 
-#[allow(dead_code)]
+#[allow(dead_code, clippy::enum_variant_names)]
 pub enum Errors {
     SqlError,
     RequestError,

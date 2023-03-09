@@ -70,7 +70,7 @@ pub fn get_block_time(conn: &PooledConnection<SqliteConnectionManager>, path: St
             let mut stmt = conn.prepare(sql).unwrap();
 
             let result = stmt.query_row([id], |row| {
-                Ok(row.get(0)?)
+                row.get(0)
             });
 
             result.map_err(|_| Error { error: "Block does not exist.".to_string() })
@@ -85,7 +85,7 @@ pub fn get_block_time(conn: &PooledConnection<SqliteConnectionManager>, path: St
             let mut stmt = conn.prepare(sql).unwrap();
 
             let result = stmt.query_row([path], |row| {
-                Ok(row.get(0)?)
+                row.get(0)
             });
 
             result.map_err(|_| Error { error: "Block does not exist.".to_string() })

@@ -102,7 +102,7 @@ Start height is {}.
                 start_height + batch_size
             ).await;
 
-            start_height = start_height + batch_size;
+            start_height += batch_size;
 
         } else {
 
@@ -121,7 +121,7 @@ Start height is {}.
     let index_duration = index_end.duration_since(index_start).unwrap();
     println!("Indexing completed in {} ms.", index_duration.as_millis());
 
-    if args.keep_alive == true {
+    if args.keep_alive {
         loop {
             sleep(Duration::from_secs(SLEEP_INTERVAL)).await;
 
