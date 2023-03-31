@@ -63,11 +63,14 @@ async fn main() {
     println!("Starting node sync..");
 
     let client = Client::new();
-    let sync_future = spawn::sync_node(NEOGO_PATH).await.unwrap();
+    let (_, _, shutdown_tx) = spawn::sync_node(NEOGO_PATH).await.unwrap();
 
     let sync_end = SystemTime::now();
     let sync_duration = sync_end.duration_since(start).unwrap();
     println!("Sync completed in {} ms.", sync_duration.as_millis());
+
+    // Add a delay before attempting to connect
+    sleep(Duration::from_secs(3)).await;
 
     // Find the current chain height and stored height
     let mut stored_height = db::get_last_index("blocks").unwrap();
@@ -143,7 +146,7 @@ Start height is {}.
     }
 
     // kill the node
-    drop(sync_future);
+    let _ = shutdown_tx.send(());
 
 }
 

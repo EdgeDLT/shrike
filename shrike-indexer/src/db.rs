@@ -132,7 +132,8 @@ pub fn get_last_index(table: &str) -> Result<u64, Error> {
     let mut stmt = conn.prepare(sql).unwrap();
     let index: Result<u64, Error> = stmt.query_row([], |row| row.get(0));
 
-    Ok(index.unwrap())
+    index
+
 }
 
 #[allow(dead_code)]
