@@ -6,9 +6,7 @@ use tokio::task::JoinHandle;
 use std::process::Stdio;
 use std::sync::Arc;
 
-pub async fn sync_node(
-    path: &str,
-) -> Result<(Arc<Mutex<Child>>, JoinHandle<()>, oneshot::Sender<()>), Box<dyn std::error::Error>> {
+pub async fn sync_node(path: &str) -> Result<(Arc<Mutex<Child>>, JoinHandle<()>, JoinHandle<()>, oneshot::Sender<()>), Box<dyn std::error::Error>> {
     let mut cmd = Command::new(path);
     cmd.stderr(Stdio::piped());
 
@@ -27,16 +25,21 @@ pub async fn sync_node(
     let node_arc = Arc::new(Mutex::new(node));
 
     let stderr_handle = {
-        let node_shared = Arc::clone(&node_arc);
         tokio::spawn(async move {
             while let Some(line) = stderr_reader.next_line().await.unwrap_or_default() {
                 if line.contains("headerHeight") {
-                    println!("{}", line);
+                    println!("{}", line)
                 }
                 if line.contains("synchronized") {
                     break;
                 }
             }
+        })
+    };
+
+    let kill_handle = {
+        let node_shared = Arc::clone(&node_arc);
+        tokio::spawn(async move {
             // Wait for the shutdown signal
             let _ = shutdown_rx.await;
             // Terminate the child process
@@ -45,5 +48,5 @@ pub async fn sync_node(
         })
     };
 
-    Ok((node_arc, stderr_handle, shutdown_tx))
+    Ok((node_arc, stderr_handle, kill_handle, shutdown_tx))
 }
