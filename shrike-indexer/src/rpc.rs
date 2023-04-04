@@ -1,4 +1,4 @@
-use reqwest::{Client, Response, Error};
+use reqwest::{Client, Response};
 
 use crate::models::{
     BlockResponse,
@@ -18,12 +18,13 @@ use crate::models::{
 // NeoGo default
 const NODE_PATH: &str = "http://localhost:10332";
 
-pub async fn get_response(client: &Client, request: RpcRequest<NeoParam>) -> Result<Response, Error> {
-    Ok(client.post(NODE_PATH)
+pub async fn get_response(client: &Client, request: RpcRequest<NeoParam>) -> Result<Response, anyhow::Error> {
+    let result = client.post(NODE_PATH)
         .json(&request)
         .send()
-        .await
-        .unwrap())
+        .await?;
+
+    Ok(result)
 }
 
 pub fn build_request(method: &str, args: Vec<NeoParam>) -> RpcRequest<NeoParam> {
@@ -68,14 +69,15 @@ pub async fn neo_fetch(client: &Client, method: NeoMethod, arg: NeoParam) -> Neo
     }
 }
 
-pub async fn get_current_height(client: &Client) -> u64 {
+pub async fn get_current_height(client: &Client) -> Result<u64, anyhow::Error> {
+
     let height_response = neo_fetch(
         client,
         NeoMethod::BlockCount,
         NeoParam::Integer(0))
         .await;
     if let NeoResponse::BlockCount(node_height) = height_response {
-        node_height.result
+        Ok(node_height.result)
     } else {
         panic!("Failed to get chain height.")
     }

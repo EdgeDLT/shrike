@@ -1,4 +1,4 @@
-use rusqlite::{Connection, Error, params};
+use rusqlite::{Connection, params};
 
 use crate::models;
 
@@ -8,10 +8,10 @@ pub fn connect_to_db() -> Connection {
     Connection::open(DB_PATH).unwrap()
 }
 
-pub fn create_block_table() -> usize {
+pub fn create_block_table() -> Result<usize, anyhow::Error> {
     let conn = connect_to_db();
 
-    conn.execute("CREATE TABLE IF NOT EXISTS blocks (
+    let result = conn.execute("CREATE TABLE IF NOT EXISTS blocks (
         id                  INTEGER PRIMARY KEY AUTOINCREMENT,
         hash                TEXT NOT NULL UNIQUE,
         size                INTEGER NOT NULL,
@@ -24,17 +24,19 @@ pub fn create_block_table() -> usize {
         reward              FLOAT NOT NULL,
         reward_receiver     TEXT NOT NULL,
         witnesses           TEXT NOT NULL
-        )", []).unwrap()
+        )", [])?;
+
+    Ok(result)
 }
 
-pub fn insert_into_block_table(block: models::Block) {
+pub fn insert_into_block_table(block: models::Block) -> Result<usize, anyhow::Error> {
     let conn = connect_to_db();
     let sql = "INSERT INTO blocks (
         id, hash, size, version, merkle_root, time,
         nonce, speaker, next_consensus, reward, reward_receiver, witnesses
     ) VALUES (0, ?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11)";
 
-    conn.execute(sql, params![
+    let result = conn.execute(sql, params![
         block.hash,
         block.size,
         block.version,
@@ -46,13 +48,15 @@ pub fn insert_into_block_table(block: models::Block) {
         block.reward,
         block.reward_receiver,
         block.witnesses
-    ]).unwrap();
+    ])?;
+
+    Ok(result)
 }
 
-pub fn create_transaction_table() -> usize {
+pub fn create_transaction_table() -> Result<usize, anyhow::Error> {
     let conn = connect_to_db();
 
-    conn.execute("CREATE TABLE IF NOT EXISTS transactions (
+    let result = conn.execute("CREATE TABLE IF NOT EXISTS transactions (
         id                  INTEGER PRIMARY KEY AUTOINCREMENT,
         hash                TEXT NOT NULL UNIQUE,
         block_hash          TEXT NOT NULL,
@@ -69,11 +73,13 @@ pub fn create_transaction_table() -> usize {
         witnesses           TEXT NOT NULL,
         stack_result        TEXT,
         notifications       TEXT
-        )", []).unwrap()
+        )", [])?;
+
+    Ok(result)
 }
 
 // ugly but gives an extra speed up
-pub fn insert_blocks_transactions(blocks: impl Iterator<Item = models::Block>, transactions: impl Iterator<Item = models::Transaction>) -> Result<(), Error> {
+pub fn insert_blocks_transactions(blocks: impl Iterator<Item = models::Block>, transactions: impl Iterator<Item = models::Transaction>) -> Result<(), anyhow::Error> {
     let conn = connect_to_db();
     let tx = conn.unchecked_transaction()?;
 
@@ -122,23 +128,25 @@ pub fn insert_blocks_transactions(blocks: impl Iterator<Item = models::Block>, t
             transaction.notifications
         ])?;
     }
-    tx.commit()
+    tx.commit()?;
+
+    Ok(())
 }
 
-pub fn get_last_index(table: &str) -> Result<u64, Error> {
+pub fn get_last_index(table: &str) -> Result<u64, anyhow::Error> {
     let conn = connect_to_db();
     let sql = &format!("SELECT id FROM {} WHERE id=(SELECT max(id) FROM {})", table, table);
 
     let mut stmt = conn.prepare(sql).unwrap();
-    let index: Result<u64, Error> = stmt.query_row([], |row| row.get(0));
+    let index: u64 = stmt.query_row([], |row| row.get(0))?;
 
-    index
-
+    Ok(index)
 }
 
 #[allow(dead_code)]
-pub fn drop_table(table: &str) -> usize {
+pub fn drop_table(table: &str) -> Result<usize, anyhow::Error> {
     let conn = connect_to_db();
+    let result = conn.execute(&format!("DROP TABLE {}", table), [])?;
 
-    conn.execute(&format!("DROP TABLE {}", table), []).unwrap()
+    Ok(result)
 }

@@ -2,11 +2,12 @@ use tokio::process::{Command, Child};
 use tokio::io::{BufReader, AsyncBufReadExt};
 use tokio::sync::{oneshot, Mutex};
 use tokio::task::JoinHandle;
+use log::info;
 
 use std::process::Stdio;
 use std::sync::Arc;
 
-pub async fn sync_node(path: &str) -> Result<(Arc<Mutex<Child>>, JoinHandle<()>, JoinHandle<()>, oneshot::Sender<()>), Box<dyn std::error::Error>> {
+pub async fn sync_node(path: &str) -> Result<(Arc<Mutex<Child>>, JoinHandle<()>, JoinHandle<()>, oneshot::Sender<()>), anyhow::Error> {
     let mut cmd = Command::new(path);
     cmd.stderr(Stdio::piped());
 
@@ -28,7 +29,7 @@ pub async fn sync_node(path: &str) -> Result<(Arc<Mutex<Child>>, JoinHandle<()>,
         tokio::spawn(async move {
             while let Some(line) = stderr_reader.next_line().await.unwrap_or_default() {
                 if line.contains("headerHeight") {
-                    println!("{}", line)
+                    info!("{}", line)
                 }
                 if line.contains("synchronized") {
                     break;

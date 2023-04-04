@@ -1,10 +1,16 @@
 use futures::future::join_all;
 use reqwest::Client;
 use serde_json::to_string;
+use anyhow::{Context, Result};
+use tokio::{time::{sleep, Duration}, fs::File, io::AsyncWriteExt};
+use text_io::read;
+use log::{info, warn};
+
+use std::{path::Path, io, env, process::Command};
 
 use shrike_lib::neo::base64_to_address;
 
-use crate::rpc::{fetch_full_block, fetch_full_transaction};
+use crate::rpc::{fetch_full_block, fetch_full_transaction, get_current_height};
 use crate::db::insert_blocks_transactions;
 use crate::models::{
     Block,
@@ -15,7 +21,17 @@ use crate::models::{
     TransactionAppLogResult
 };
 
-pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) {
+#[cfg(target_os = "linux")]
+pub static NEOGO_PATH: &str = "./neogo";
+#[cfg(target_os = "windows")]
+pub static NEOGO_PATH: &str = "./neogo.exe";
+
+#[cfg(target_os = "linux")]
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-linux-amd64";
+#[cfg(target_os = "windows")]
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-windows-amd64.exe";
+
+pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) -> Result<(), anyhow::Error> {
 
     let future_blocks = (start_height..end_height)
         .map(|i| fetch_full_block(client, i));
@@ -62,8 +78,9 @@ pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) {
 
     // Dump all to DB in one step
     // It's uglier but faster and gives the tables a synced rollback point
-    insert_blocks_transactions(prepped_blocks, prepped_tx).unwrap();
+    insert_blocks_transactions(prepped_blocks, prepped_tx)?;
 
+    Ok(())
 }
 
 pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
@@ -117,4 +134,71 @@ pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResu
         stack_result: to_string(&stack).unwrap(),
         notifications: to_string(&notifs).unwrap()
     }
+}
+
+pub async fn initial_sync(client: &Client, mut start_height: u64, current_height: u64, batch_size: u64) -> Result<(), anyhow::Error> {
+    while start_height != current_height {
+        if current_height - start_height > batch_size {
+            sync_between(client, start_height, start_height + batch_size)
+                .await
+                .context("Failed to synchronize block range")?;
+
+            start_height += batch_size;
+        } else {
+            sync_between(client, start_height, current_height)
+                .await
+                .context("Failed to synchronize block range")?;
+
+            break;
+        }
+    }
+    Ok(())
+}
+
+pub async fn continuous_sync(client: &Client, mut stored_height: u64, sleep_interval: Duration) -> Result<(), anyhow::Error> {
+    loop {
+        sleep(sleep_interval).await;
+
+        let new_height = get_current_height(client)
+            .await
+            .context("Failed to get current height")?
+            - 1;
+
+        if new_height > stored_height {
+            sync_between(client, stored_height, new_height)
+                .await
+                .context("Failed to synchronize new blocks")?;
+
+            log::info!("Synced {} new block(s).", new_height - stored_height);
+            stored_height = new_height;
+        }
+    }
+}
+
+pub async fn check_neogo() -> io::Result<()> {
+    let path = Path::new(NEOGO_PATH);
+    if !path.exists() {
+        warn!("NeoGo not found in directory. Install? (y/n)");
+        let answer: char = read!();
+        if answer != 'y' {
+            panic!("User declined to install NeoGo.")
+        }
+
+        let mut file = File::create(path).await?;
+        let mut response = reqwest::get(NEOGO_DL).await.unwrap();
+        while let Some(chunk) = response.chunk().await.unwrap() {
+            file.write_all(&chunk).await?;
+        }
+
+        if env::consts::OS == "linux" {
+            info!("Updating permissions..");
+            Command::new("chmod")
+                .arg("+x")
+                .arg(NEOGO_PATH)
+                .output()
+                .expect("failed to update permissions");
+        }
+        info!("NeoGo installed.");
+    }
+    Ok(())
 }
