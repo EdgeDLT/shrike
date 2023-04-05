@@ -1,4 +1,4 @@
-use shrike_lib::neo::ALPHABET;
+use lib::neo::ALPHABET;
 
 pub fn is_neo_address(string: &str) -> bool {
     string.chars().count() == 34 && string.starts_with('N') && string.chars().all(|c| ALPHABET.contains(&(c as u8)))

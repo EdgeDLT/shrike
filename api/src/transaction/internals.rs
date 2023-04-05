@@ -1,4 +1,4 @@
-use shrike_lib::neo;
+use lib::neo;
 use r2d2::PooledConnection;
 use r2d2_sqlite::SqliteConnectionManager;
 

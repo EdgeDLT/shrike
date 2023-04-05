@@ -9,7 +9,6 @@
 * Add DB download utility for easy data sharing
 * Contract validation/blacklisting (prevent stat manipulation via fake events)
 * Add graceful shutdown for SIGTERM
-* Create shared lib
 
 ### Frontend:
 

@@ -8,7 +8,7 @@ use log::{info, warn};
 
 use std::{path::Path, io, env, process::Command};
 
-use shrike_lib::neo::base64_to_address;
+use lib::neo::base64_to_address;
 
 use crate::rpc::{fetch_full_block, fetch_full_transaction, get_current_height};
 use crate::db::insert_blocks_transactions;
@@ -155,7 +155,7 @@ pub async fn initial_sync(client: &Client, mut start_height: u64, current_height
     Ok(())
 }
 
-pub async fn continuous_sync(client: &Client, mut stored_height: u64, sleep_interval: Duration) -> Result<(), anyhow::Error> {
+pub async fn continuous_sync(client: &Client, mut start_height: u64, sleep_interval: Duration) -> Result<(), anyhow::Error> {
     loop {
         sleep(sleep_interval).await;
 
@@ -164,13 +164,13 @@ pub async fn continuous_sync(client: &Client, mut stored_height: u64, sleep_inte
             .context("Failed to get current height")?
             - 1;
 
-        if new_height > stored_height {
-            sync_between(client, stored_height, new_height)
+        if new_height > start_height {
+            sync_between(client, start_height, new_height)
                 .await
                 .context("Failed to synchronize new blocks")?;
 
-            log::info!("Synced {} new block(s).", new_height - stored_height);
-            stored_height = new_height;
+            log::info!("Synced {} new block(s).", new_height - start_height);
+            start_height = new_height;
         }
     }
 }

@@ -2,7 +2,7 @@ use tokio::time::{sleep, Duration};
 use reqwest::Client;
 use clap::Parser;
 use anyhow::{Context, Result};
-use log::{info, error};
+use log::{info, error, LevelFilter};
 
 use std::time::SystemTime;
 
@@ -23,9 +23,10 @@ const SLEEP_INTERVAL: u64 = 5; // in seconds, used for keep-alive mode
 
 #[tokio::main]
 async fn main() {
-    // Initialize the logger
-    std::env::set_var("RUST_LOG", "info");
-    env_logger::init();
+    env_logger::builder()
+        .filter_level(LevelFilter::Info)
+        .format_timestamp(None)
+        .init();
 
     if let Err(e) = run().await {
         error!("Application error: {:?}", e);
@@ -63,8 +64,7 @@ async fn run() -> Result<()> {
 
     // spawn the node and wait for the sync to complete
     info!("Starting node sync..");
-    let (_, stderr_handle, kill_handle, shutdown_tx) = spawn::sync_node(utils::NEOGO_PATH).await.context("Failed to sync node")?;
-    stderr_handle.await.context("Failed in stderr_handle")?;
+    let (_stderr_out, handle, shutdown_tx) = spawn::sync_node(utils::NEOGO_PATH).await.context("Failed to sync node")?;
 
     let sync_end = SystemTime::now();
     let sync_duration = sync_end.duration_since(start)?;
@@ -96,18 +96,19 @@ async fn run() -> Result<()> {
 
      let index_end = SystemTime::now();
      let index_duration = index_end.duration_since(index_start)?;
+     let new_stored_height = db::get_last_index("blocks").context("Failed to get latest stored index")?;
      info!("Indexing completed in {} ms.", index_duration.as_millis());
+     info!("New stored height is {}.", new_stored_height);
 
      // if we're in keep-alive mode, keep the node running and sync new blocks
     if args.keep_alive {
-        utils::continuous_sync(&client, stored_height, Duration::from_secs(SLEEP_INTERVAL)).await?;
+        let start_height = new_stored_height + 1;
+        utils::continuous_sync(&client, start_height, Duration::from_secs(SLEEP_INTERVAL)).await?;
     } else {
-        log::info!("Killing the node now.");
+        // send the shutdown signal to the node and wait for it to exit
+        let _ = shutdown_tx.send(());
+        handle.await.context("Failed to kill node")?;
     }
-
-    // send the shutdown signal to the node and wait for it to exit
-    let _ = shutdown_tx.send(());
-    kill_handle.await.context("Failed to kill node")?;
 
     Ok(())
 }

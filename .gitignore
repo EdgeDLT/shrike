@@ -1,35 +1,35 @@
 /target
 
 # api
-/shrike-api/target
+/api/target
 
 # indexer
-/shrike-indexer/target
-/shrike-indexer/chains
-/shrike-indexer/log/neogo.log
-/shrike-indexer/.env
-/shrike-indexer/neogo.exe
-/shrike-indexer/shrike.db3
-/shrike-indexer/shrike.db3-journal
-/shrike-indexer/shrike.db3-shm
-/shrike-indexer/shrike.db3-wal
-/shrike-indexer/todo.md
-/shrike-indexer/debug.log
-/shrike-indexer/readme.md.backup
-
+/indexer/target
+/indexer/chains
+/indexer/log/neogo.log
+/indexer/.env
+/indexer/neogo
+/indexer/neogo.exe
+/indexer/shrike.db3
+/indexer/shrike.db3-journal
+/indexer/shrike.db3-shm
+/indexer/shrike.db3-wal
+/indexer/todo.md
+/indexer/debug.log
+/indexer/readme.md.backup
 
 # gui
-/shrike-gui/dist
-/shrike-gui/.solid
-/shrike-gui/.output
-/shrike-gui/.vercel
-/shrike-gui/.netlify
-/shrike-gui/netlify
-/shrike-gui/node_modules
-/shrike-gui/.idea
-/shrike-gui/.project
-/shrike-gui/.classpath
-/shrike-gui/*.launch
-/shrike-gui/.settings/
-/shrike-gui/.DS_Store
-/shrike-gui/Thumbs.db
+/gui/dist
+/gui/.solid
+/gui/.output
+/gui/.vercel
+/gui/.netlify
+/gui/netlify
+/gui/node_modules
+/gui/.idea
+/gui/.project
+/gui/.classpath
+/gui/*.launch
+/gui/.settings/
+/gui/.DS_Store
+/gui/Thumbs.db

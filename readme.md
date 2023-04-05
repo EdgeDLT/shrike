@@ -31,7 +31,7 @@ The Indexer oversees three functions:
 * The latest stable Rust version. I recommend using [Rustup](https://rustup.rs/).
 * (Optional) An SQLite-compatible DB browser/query editor. For simplicity I enjoy [DB Browser](https://sqlitebrowser.org/), going more advanced you might prefer [DBeaver](https://dbeaver.io/).
 
-Indexer is built with and therefore mostly tested on **Windows 10**. It should also work on other platforms, although I have only tested it on **Ubuntu 22.04 LTS**. To build Indexer on Ubuntu, you will also need to install a C linker, OpenSSL, and possibly pkg-config:
+Indexer is built with and therefore mostly tested on **Windows 10**. It should also work on other platforms, although I have only tested it on **Debian 11**. To build Indexer on Ubuntu, you will also need to install a C linker, OpenSSL, and possibly pkg-config:
 `sudo apt install build-essential libssl-dev pkg-config`
 
 ### Quickstart

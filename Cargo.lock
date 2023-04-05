@@ -244,6 +244,23 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7de8ce5e0f9f8d88245311066a578d72b7af3e7088f32783804676302df237e4"
 
 [[package]]
+name = "api"
+version = "0.1.0"
+dependencies = [
+ "actix-cors",
+ "actix-web",
+ "futures",
+ "lib",
+ "once_cell",
+ "r2d2",
+ "r2d2_sqlite",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -820,6 +837,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "indexer"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "dotenv",
+ "env_logger",
+ "futures",
+ "lib",
+ "log",
+ "reqwest",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "text_io",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.9.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -901,6 +938,15 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+
+[[package]]
+name = "lib"
+version = "0.1.0"
+dependencies = [
+ "base64 0.20.0",
+ "hex",
+ "sha2",
+]
 
 [[package]]
 name = "libc"
@@ -1465,52 +1511,6 @@ dependencies = [
  "cfg-if",
  "cpufeatures",
  "digest",
-]
-
-[[package]]
-name = "shrike-api"
-version = "0.1.0"
-dependencies = [
- "actix-cors",
- "actix-web",
- "futures",
- "once_cell",
- "r2d2",
- "r2d2_sqlite",
- "rusqlite",
- "serde",
- "serde_json",
- "shrike-lib",
- "tokio",
-]
-
-[[package]]
-name = "shrike-indexer"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "dotenv",
- "env_logger",
- "futures",
- "log",
- "reqwest",
- "rusqlite",
- "serde",
- "serde_json",
- "shrike-lib",
- "text_io",
- "thiserror",
- "tokio",
-]
-
-[[package]]
-name = "shrike-lib"
-version = "0.1.0"
-dependencies = [
- "base64 0.20.0",
- "hex",
- "sha2",
 ]
 
 [[package]]

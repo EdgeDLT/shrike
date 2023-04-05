@@ -1,5 +1,5 @@
 [package]
-name = "shrike-indexer"
+name = "indexer"
 version = "0.1.0"
 edition = "2021"
 
@@ -14,7 +14,7 @@ reqwest = { version = "0.11.13", features = ["json"]}
 futures = "0.3.25"
 tokio = { version = "1.23.0", features = ["full"] }
 clap = { version = "4.1.4", features = ["derive"] }
-shrike-lib = { path = "../shrike-lib" }
+lib = { path = "../lib" }
 text_io = "0.1.12"
 thiserror = "1.0.40"
 anyhow = "1.0.70"

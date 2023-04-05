@@ -1,7 +1,7 @@
 [workspace]
 
 members = [
-    "shrike-api",
-    "shrike-indexer",
-    "shrike-lib"
+    "api",
+    "indexer",
+    "lib"
 ]
