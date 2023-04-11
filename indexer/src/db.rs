@@ -13,7 +13,7 @@ pub fn set_to_wal() -> Result<(), anyhow::Error> {
     let conn = connect_to_db();
     let wal_active: String = conn.query_row("PRAGMA journal_mode", [], |row| row.get(0))?;
     if wal_active != "wal" {
-        conn.execute("PRAGMA journal_mode=WAL", [])?;
+        let _: String = conn.query_row("PRAGMA journal_mode=WAL", [], |row| row.get(0))?;
         info!("Set db to WAL mode.");
     }
 
