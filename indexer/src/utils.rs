@@ -79,6 +79,7 @@ pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) -
     // Dump all to DB in one step
     // It's uglier but faster and gives the tables a synced rollback point
     insert_blocks_transactions(prepped_blocks, prepped_tx)?;
+    info!("Indexed {} blocks.", end_height - start_height);
 
     Ok(())
 }

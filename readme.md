@@ -6,7 +6,7 @@ Shrike is a set of tools built for the purpose of Neo blockchain data analysis. 
 
 **[API](https://github.com/EdgeDLT/shrike#api)** - Serves a set of useful queries for indexed data over a REST API. Used to power the GUI and hopefully other third-party applications in the future.
 
-**[GUI](https://github.com/EdgeDLT/shrike#gui)** - A simple web interface for interacting with the data made available by Shrike. A hosted version of this application may be found [here](https://google.com).
+**[GUI](https://github.com/EdgeDLT/shrike#gui)** - A simple web interface for interacting with the data made available by Shrike. A hosted version of this application will be launched in the future.
 
 **[Lib](https://github.com/EdgeDLT/shrike#lib)** - A shared library for methods and models that are used across multiple Shrike components.
 
@@ -31,7 +31,7 @@ The Indexer oversees three functions:
 * The latest stable Rust version. I recommend using [Rustup](https://rustup.rs/).
 * (Optional) An SQLite-compatible DB browser/query editor. For simplicity I enjoy [DB Browser](https://sqlitebrowser.org/), going more advanced you might prefer [DBeaver](https://dbeaver.io/).
 
-Indexer is built with and therefore mostly tested on **Windows 10**. It should also work on other platforms, although I have only tested it on **Debian 11**. To build Indexer on Ubuntu, you will also need to install a C linker, OpenSSL, and possibly pkg-config:
+Indexer is built with and therefore mostly tested on **Windows 10**. It should also work on Linux, although I have only tested it on **Debian 11**. To build Indexer on Linux, you will likely need to install a C linker, OpenSSL, and possibly pkg-config:
 `sudo apt install build-essential libssl-dev pkg-config`
 
 ### Quickstart
