@@ -42,6 +42,9 @@ async fn run() -> Result<()> {
     info!("Checking for NeoGo..");
     utils::check_neogo().await.context("Failed to confirm NeoGo install")?;
 
+    // make sure WAL journal mode is enabled
+    db::set_to_wal().context("Failed to set to WAL")?;
+
     // fails if it already exists
     db::create_block_table().context("Failed to create block table")?;
     db::create_transaction_table().context("Failed to create transaction table")?;

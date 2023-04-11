@@ -1,3 +1,4 @@
+use log::info;
 use rusqlite::{Connection, params};
 
 use crate::models;
@@ -6,6 +7,17 @@ const DB_PATH: &str = "shrike.db3";
 
 pub fn connect_to_db() -> Connection {
     Connection::open(DB_PATH).unwrap()
+}
+
+pub fn set_to_wal() -> Result<(), anyhow::Error> {
+    let conn = connect_to_db();
+    let wal_active: String = conn.query_row("PRAGMA journal_mode", [], |row| row.get(0))?;
+    if wal_active != "wal" {
+        conn.execute("PRAGMA journal_mode=WAL", [])?;
+        info!("Set db to WAL mode.");
+    }
+
+    Ok(())
 }
 
 pub fn create_block_table() -> Result<usize, anyhow::Error> {
