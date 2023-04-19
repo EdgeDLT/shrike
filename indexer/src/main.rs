@@ -49,6 +49,11 @@ async fn run() -> Result<()> {
     db::create_block_table().context("Failed to create block table")?;
     db::create_transaction_table().context("Failed to create transaction table")?;
 
+    // create indexes if they don't exist
+    db::create_index("idx_blocks_hash", "blocks", "hash").context("Failed to create block index")?;
+    db::create_index("idx_tx_hash", "transactions", "hash").context("Failed to create txid index")?;
+    db::create_index("idx_tx_senders", "transactions", "sender").context("Failed to create txsender index")?;
+
     // some setup
     let index_result = db::get_last_index("blocks").context("Failed to get last stored block index");
     match index_result {

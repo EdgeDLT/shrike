@@ -20,6 +20,15 @@ pub fn set_to_wal() -> Result<(), anyhow::Error> {
     Ok(())
 }
 
+pub fn create_index(name: &str, table: &str, column: &str) -> Result<usize, anyhow::Error> {
+    let conn = connect_to_db();
+    let sql = format!("CREATE INDEX IF NOT EXISTS {} ON {} ({})", name, table, column);
+
+    let result = conn.execute(&sql, [])?;
+
+    Ok(result)
+}
+
 pub fn create_block_table() -> Result<usize, anyhow::Error> {
     let conn = connect_to_db();
 
