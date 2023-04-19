@@ -11,7 +11,7 @@ pub type Address = String;
 pub struct Transaction {
     pub index: u64,
     pub hash: String,
-    pub block_hash: String,
+    pub block_index: u64,
     pub vm_state: String,
     pub size: u32,
     pub version: u8,

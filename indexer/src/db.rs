@@ -71,7 +71,7 @@ pub fn create_transaction_table() -> Result<usize, anyhow::Error> {
     let result = conn.execute("CREATE TABLE IF NOT EXISTS transactions (
         id                  INTEGER PRIMARY KEY AUTOINCREMENT,
         hash                TEXT NOT NULL UNIQUE,
-        block_hash          TEXT NOT NULL,
+        block_index         INTEGER NOT NULL,
         vm_state            TEXT NOT NULL,
         size                INTEGER NOT NULL,
         version             INTEGER NOT NULL,
@@ -84,7 +84,8 @@ pub fn create_transaction_table() -> Result<usize, anyhow::Error> {
         script              TEXT NOT NULL,
         witnesses           TEXT NOT NULL,
         stack_result        TEXT,
-        notifications       TEXT
+        notifications       TEXT,
+        FOREIGN KEY (block_index) REFERENCES blocks (id)
         )", [])?;
 
     Ok(result)
@@ -117,14 +118,14 @@ pub fn insert_blocks_transactions(blocks: impl Iterator<Item = models::Block>, t
     }
 
     let mut tx_stmt = conn.prepare_cached( "INSERT INTO transactions (
-        hash, block_hash, vm_state, size, version, nonce, sender, sysfee, netfee,
+        hash, block_index, vm_state, size, version, nonce, sender, sysfee, netfee,
         valid_until, signers, script, witnesses, stack_result, notifications
     ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15)")?;
 
     for transaction in transactions {
         tx_stmt.execute(params![
             transaction.hash,
-            transaction.block_hash,
+            transaction.block_index,
             transaction.vm_state,
             transaction.size,
             transaction.version,

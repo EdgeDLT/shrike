@@ -38,12 +38,13 @@ pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) -
     let all_blocks = join_all(future_blocks).await;
 
     // Have to clone to keep all_blocks unmoved for future steps
-    let transactions: Vec<TransactionResult> = all_blocks
-        .iter()
-        .flat_map(|(block, _)| {
-            block.tx
-                .iter()
-                .map(|tx| {
+    let transactions_with_index: Vec<(TransactionResult, u64)> = all_blocks
+    .iter()
+    .flat_map(|(block, _)| {
+        block.tx
+            .iter()
+            .map(move |tx| {
+                (
                     TransactionResult {
                         hash: tx.hash.clone(),
                         blockhash: Some(block.hash.clone()),
@@ -57,24 +58,32 @@ pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) -
                         signers: tx.signers.clone(),
                         script: tx.script.clone(),
                         witnesses: tx.witnesses.clone(),
-                    }
-                })
-                .collect::<Vec<TransactionResult>>()
-        })
-        .collect();
+                    },
+                    block.index,
+                )
+            })
+            .collect::<Vec<(TransactionResult, u64)>>()
+    })
+    .collect();
+
+    let (transactions, block_indexes): (Vec<TransactionResult>, Vec<u64>) = transactions_with_index.into_iter().unzip();
 
     let future_transactions = transactions
         .into_iter()
         .map(|tx| fetch_full_transaction(client, tx));
     let all_transactions = join_all(future_transactions).await;
 
+    let all_transactions_with_index = all_transactions
+        .into_iter()
+        .zip(block_indexes.into_iter());
+
     let prepped_blocks = all_blocks
         .into_iter()
         .map(|(b, a)| convert_block_result(b, a));
 
-    let prepped_tx = all_transactions
+    let prepped_tx = all_transactions_with_index
         .into_iter()
-        .map(|(t, a)| convert_transaction_result(t, a) );
+        .map(|((t, a), block_index)| convert_transaction_result(t, a, block_index));
 
     // Dump all to DB in one step
     // It's uglier but faster and gives the tables a synced rollback point
@@ -112,7 +121,7 @@ pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
     }
 }
 
-pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResult) -> Transaction {
+pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResult, block_height: u64) -> Transaction {
 
     let state = &a.executions[0].vmstate;
     let stack = &a.executions[0].stack;
@@ -120,7 +129,7 @@ pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResu
 
     Transaction {
         hash: t.hash,
-        block_hash: t.blockhash.unwrap(),
+        block_index: block_height,
         vm_state: state.to_string(),
         size: t.size,
         version: t.version,
