@@ -10,10 +10,10 @@ use actix_cors::Cors;
 use rusqlite::OpenFlags;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
+use lib::db::DB_PATH;
 
 use std::time::Duration;
 
-const DB_PATH: &str = "../indexer/shrike.db3";
 const REFRESH_INTERVAL: u64 = 3; // how often we check for a new block and refresh stats in seconds
 
 pub struct ConnectionPool {
@@ -23,7 +23,8 @@ pub struct ConnectionPool {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 
-    let manager = SqliteConnectionManager::file(DB_PATH)
+    let db_path = DB_PATH.to_str().expect("Failed to convert database path to str");
+    let manager = SqliteConnectionManager::file(db_path)
         .with_flags(OpenFlags::SQLITE_OPEN_READ_ONLY);
     let pool = Pool::new(manager).unwrap();
 
@@ -41,6 +42,8 @@ async fn main() -> std::io::Result<()> {
             stat::internals::set_stats_internal(c).await;
         }
     });
+
+    println!("Opening to requests on http://0.0.0.0:8080.");
 
     HttpServer::new(move || {
         let cors = Cors::default()

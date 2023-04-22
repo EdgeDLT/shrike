@@ -82,6 +82,7 @@ pub async fn set_stats_internal(pool:  web::Data<ConnectionPool>) {
     } else {
         // println!("No cache updated needed.")
     }
+    println!("Stats refreshed. Current height is {}.", blocks);
 }
 
 pub fn get_blocks_internal(conn: &PooledConnection<SqliteConnectionManager>) -> u64 {

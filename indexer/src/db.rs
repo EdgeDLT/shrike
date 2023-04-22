@@ -1,12 +1,12 @@
 use log::info;
 use rusqlite::{Connection, params};
 
+use lib::db::DB_PATH;
 use crate::models;
 
-const DB_PATH: &str = "shrike.db3";
-
 pub fn connect_to_db() -> Connection {
-    Connection::open(DB_PATH).unwrap()
+    let db_path = DB_PATH.to_str().expect("Failed to convert database path to str");
+    Connection::open(db_path).unwrap()
 }
 
 pub fn set_to_wal() -> Result<(), anyhow::Error> {
