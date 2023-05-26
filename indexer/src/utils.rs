@@ -23,11 +23,15 @@ use crate::models::{
 
 #[cfg(target_os = "linux")]
 pub static NEOGO_PATH: &str = "./neogo";
+#[cfg(target_os = "macos")]
+pub static NEOGO_PATH: &str = "./neogo";
 #[cfg(target_os = "windows")]
 pub static NEOGO_PATH: &str = "./neogo.exe";
 
 #[cfg(target_os = "linux")]
 static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-linux-amd64";
+#[cfg(target_os = "macos")]
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-darwin-arm64";
 #[cfg(target_os = "windows")]
 static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-windows-amd64.exe";
 
@@ -200,7 +204,7 @@ pub async fn check_neogo() -> io::Result<()> {
             file.write_all(&chunk).await?;
         }
 
-        if env::consts::OS == "linux" {
+        if env::consts::OS != "windows" {
             info!("Updating permissions..");
             Command::new("chmod")
                 .arg("+x")

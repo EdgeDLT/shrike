@@ -41,7 +41,7 @@ For optimal use, pair the Indexer with a SQLite-compatible database browser or q
 
 * The latest stable Rust version. I recommend using [Rustup](https://rustup.rs/).
 
-The Indexer is primarily built and tested on **Windows 10** but should also work on Linux. It is also tested it on **Debian 11**. To build the Indexer on Linux, you may need to install a C linker, OpenSSL, and possibly pkg-config:
+The Indexer is primarily built and tested on **Windows 10**. Though less thoroughly tested, Linux and ARM-based MacOS is also supported. but should also work on Linux. To build the Indexer on Linux, you may need to install a C linker, OpenSSL, and possibly pkg-config:
 `sudo apt install build-essential libssl-dev pkg-config`
 
 ### Quickstart
@@ -64,13 +64,19 @@ Shrike will no longer store data in the Indexer directory. This change was made 
 On Windows, the Shrike database may be found in the user `AppData` directory:
 
 ```
-C:\\Users\username\AppData\Local\Shrike\data\shrike.db3
+C:\\Users\<username>\AppData\Local\Shrike\data\shrike.db3
 ```
 
 On Linux, the project directory and data is now placed under `.local`:
 
 ```
-/home/<Username>/.local/share/Shrike/shrike.db3
+/home/<username>/.local/share/Shrike/shrike.db3
+```
+
+On MacOS:
+
+```
+/Users/<username>/Library/Application Support/Shrike/shrike.db3
 ```
 
 **Note**: At this time, NeoGo and its `chains` & `config` folders will continue to co-locate with Indexer. Subject to change.
