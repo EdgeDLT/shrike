@@ -40,6 +40,7 @@ ProtocolConfiguration:
   P2PSigExtensions: false
   Hardforks:
     Aspidochelone: 1730000
+    Basilisk: 4120000
   NativeActivations:
     ContractManagement: [0]
     StdLib: [0]
@@ -53,6 +54,8 @@ ProtocolConfiguration:
 
 ApplicationConfiguration:
   SkipBlockVerification: false
+  KeepOnlyLatestState: false
+  RemoveUntraceableBlocks: false
   # LogPath could be set up in case you need stdout logs to some proper file.
   # LogPath: "./log/neogo.log"
   DBConfiguration:

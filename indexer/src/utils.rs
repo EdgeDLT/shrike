@@ -29,11 +29,11 @@ pub static NEOGO_PATH: &str = "./neogo";
 pub static NEOGO_PATH: &str = "./neogo.exe";
 
 #[cfg(target_os = "linux")]
-static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-linux-amd64";
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.102.0/neo-go-linux-amd64";
 #[cfg(target_os = "macos")]
-static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-darwin-arm64";
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.102.0/neo-go-darwin-arm64";
 #[cfg(target_os = "windows")]
-static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.101.0/neo-go-windows-amd64.exe";
+static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.102.0/neo-go-windows-amd64.exe";
 
 pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) -> Result<(), anyhow::Error> {
 
@@ -92,8 +92,6 @@ pub async fn sync_between(client: &Client, start_height: u64, end_height: u64) -
     // Dump all to DB in one step
     // It's uglier but faster and gives the tables a synced rollback point
     insert_blocks_transactions(prepped_blocks, prepped_tx)?;
-    info!("Indexed {} blocks.", end_height - start_height);
-
     Ok(())
 }
 
@@ -151,21 +149,22 @@ pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResu
 }
 
 pub async fn initial_sync(client: &Client, mut start_height: u64, current_height: u64, batch_size: u64) -> Result<(), anyhow::Error> {
-    while start_height != current_height {
-        if current_height - start_height > batch_size {
-            sync_between(client, start_height, start_height + batch_size)
-                .await
-                .context("Failed to synchronize block range")?;
+    let mut count = 0;
+    info!("Updating tables:");
+    while start_height < current_height {
+        let end_height = std::cmp::min(start_height + batch_size, current_height);
 
-            start_height += batch_size;
-        } else {
-            sync_between(client, start_height, current_height)
-                .await
-                .context("Failed to synchronize block range")?;
+        sync_between(client, start_height, end_height)
+            .await
+            .context("Failed to synchronize block range")?;
 
-            break;
-        }
+        count += end_height - start_height;
+        start_height = end_height;
+
+        print!("\rIndexed {} blocks.", count);
+        io::Write::flush(&mut io::stdout()).unwrap();
     }
+    println!();
     Ok(())
 }
 
