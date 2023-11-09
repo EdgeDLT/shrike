@@ -79,7 +79,7 @@ pub async fn get_current_height(client: &Client) -> Result<u64, anyhow::Error> {
     if let NeoResponse::BlockCount(node_height) = height_response {
         Ok(node_height.result)
     } else {
-        panic!("Failed to get chain height.")
+        Err(anyhow::anyhow!("Failed to get chain height."))
     }
 }
 

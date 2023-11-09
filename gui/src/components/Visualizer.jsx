@@ -17,12 +17,10 @@ export default function Visualizer() {
 
     if (typeof result === "undefined" || result === null) {
         return (
-            <main class="container">
-                <section>
-                    <p>No address loaded for visualization.</p>
-                    <A href="/" role="button" class="outline">Back</A>
-                </section>
-            </main>
+            <section>
+                <p>No address loaded for visualization.</p>
+                <A href="/" role="button" class="outline">Back</A>
+            </section>
         )
     } else {
 
@@ -40,37 +38,35 @@ export default function Visualizer() {
     }
 
     return (
-        <main class="container">
-            <section>
-                <div>
-                    <hgroup>
-                        <h3>Visualizer</h3>
-                        <br />
-                        <h5>{activeGraph()}</h5>
-                        <h6>{address()}</h6>
-                    </hgroup>
-                </div>
-                <div style="border: 2px solid; margin-bottom: 1rem" class="container-fluid">
-                    <div style="height: 55vh" id="cyto"></div>
-                </div>
-                <div class="container">
-                    <a
-                        href="#" role="button"  class="outline contrast" onclick={
-                            (e) => {
-                                e.preventDefault()
-                                if (activeGraph() === "Sender") {
-                                    setActiveGraph("Participant")
-                                    loadGraph(participantData()[0], participantData()[1])
-                                } else {
-                                    setActiveGraph("Sender")
-                                    loadGraph(senderData()[0], senderData()[1])
-                                }
+        <section>
+            <div>
+                <hgroup>
+                    <h3>Visualizer</h3>
+                    <br />
+                    <h5>{activeGraph()}</h5>
+                    <h6>{address()}</h6>
+                </hgroup>
+            </div>
+            <div style="border: 2px solid; margin-bottom: 1rem" class="container-fluid">
+                <div style="height: 55vh" id="cyto"></div>
+            </div>
+            <div class="container">
+                <a
+                    href="#" role="button"  class="outline contrast" onclick={
+                        (e) => {
+                            e.preventDefault()
+                            if (activeGraph() === "Sender") {
+                                setActiveGraph("Participant")
+                                loadGraph(participantData()[0], participantData()[1])
+                            } else {
+                                setActiveGraph("Sender")
+                                loadGraph(senderData()[0], senderData()[1])
                             }
-                        }>Switch
-                    </a>
-                    <A href="/" role="button" style="margin-left: 10px" class="outline contrast">Back</A>
-                </div>
-            </section>
-        </main>
+                        }
+                    }>Switch
+                </a>
+                <A href="/" role="button" style="margin-left: 10px" class="outline contrast">Back</A>
+            </div>
+        </section>
     )
 }

@@ -44,16 +44,18 @@ export default function Root() {
             <Suspense>
             <ErrorBoundary>
                 <main class="container">
-                    <div style="padding-bottom: 1rem">
-                        <a href="" role="button" class="outline" style="float: right" onClick={(e) => {
-                            e.preventDefault()
-                            toggleDarkMode()
-                        }}>{themeIcon()}</a>
+                    <div style="padding-top: 1rem; padding-bottom: 3rem;">
+                        <hgroup style="float: left;">
+                            <h2>Shrike</h2>
+                            <h3>A data analysis tool for Neo</h3>
+                        </hgroup>
+                        <div style="float: right;">
+                            <a href="" role="button" class="outline" onClick={(e) => {
+                                e.preventDefault();
+                                toggleDarkMode();
+                            }}>{themeIcon()}</a>
+                        </div>
                     </div>
-                    <hgroup>
-                        <h2>Shrike</h2>
-                        <h3>A data analysis tool for Neo</h3>
-                    </hgroup>
                     <Routes>
                         <FileRoutes />
                     </Routes>
