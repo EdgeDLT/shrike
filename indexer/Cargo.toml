@@ -1,6 +1,6 @@
 [package]
 name = "indexer"
-version = "0.1.2"
+version = "0.2.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -13,10 +13,10 @@ serde_json = { version = "1.0.89" }
 reqwest = { version = "0.11.13", features = ["json", "rustls-tls"], default-features = false }
 futures = "0.3.25"
 tokio = { version = "1.23.0", features = ["full"] }
-clap = { version = "4.1.4", features = ["derive"] }
 lib = { path = "../lib" }
 text_io = "0.1.12"
 thiserror = "1.0.40"
 anyhow = "1.0.70"
 env_logger = "0.10.0"
 log = "0.4.17"
+regex = "1.5.4"
