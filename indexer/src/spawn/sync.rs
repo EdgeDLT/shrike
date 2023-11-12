@@ -1,18 +1,26 @@
-use tokio::process::{Command, ChildStderr};
-use tokio::io::{BufReader, AsyncBufReadExt, Lines};
+use log::{info, warn};
+use tokio::io::{AsyncBufReadExt, BufReader, Lines};
+use tokio::process::{ChildStderr, Command};
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;
-use log::{warn, info};
 
-use std::process::Stdio;
-use regex::Regex;
 use crate::utils::node;
+use regex::Regex;
+use std::process::Stdio;
 
-pub async fn sync_node(max_height: u64) -> Result<(Lines<BufReader<ChildStderr>>, JoinHandle<()>, oneshot::Sender<()>), anyhow::Error> {
+pub async fn sync_node(
+    max_height: u64,
+) -> Result<
+    (
+        Lines<BufReader<ChildStderr>>,
+        JoinHandle<()>,
+        oneshot::Sender<()>,
+    ),
+    anyhow::Error,
+> {
     let re = Regex::new(r#""headerHeight": (\d+),"#).unwrap();
     let mut cmd = Command::new(node::NEOGO_PATH);
-    cmd
-        .stderr(Stdio::piped());
+    cmd.stderr(Stdio::piped());
 
     let mut node = cmd
         .args(["node", "-m"])
@@ -24,7 +32,6 @@ pub async fn sync_node(max_height: u64) -> Result<(Lines<BufReader<ChildStderr>>
 
     while let Some(line) = stderr_reader.next_line().await.unwrap_or_default() {
         if line.contains("headerHeight") {
-
             if let Some(caps) = re.captures(&line) {
                 let height = caps.get(1).unwrap().as_str().parse::<u64>().unwrap();
                 info!("Current node height: {}", height);

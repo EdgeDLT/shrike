@@ -1,18 +1,19 @@
-use serde::{Serialize, Deserialize, Serializer};
+use serde::{Deserialize, Serialize, Serializer};
 
 #[derive(Deserialize, Debug)]
 pub enum NeoParam {
     String(String),
-    Integer(u64)
+    Integer(u64),
 }
 
 impl Serialize for NeoParam {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where S: Serializer
+    where
+        S: Serializer,
     {
         match *self {
             NeoParam::String(ref value) => serializer.serialize_str(value),
-            NeoParam::Integer(value) => serializer.serialize_u64(value)
+            NeoParam::Integer(value) => serializer.serialize_u64(value),
         }
     }
 }
@@ -22,16 +23,15 @@ pub struct RpcRequest {
     pub jsonrpc: String,
     pub method: String,
     pub params: Vec<NeoParam>,
-    pub id: u32
+    pub id: u32,
 }
 
 #[derive(Deserialize, Debug)]
 pub struct RpcResponse<T> {
     pub jsonrpc: String,
     pub id: u32,
-    pub result: T
+    pub result: T,
 }
-
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct BlockResult {
@@ -45,7 +45,7 @@ pub struct BlockResult {
     pub primary: u8,
     pub nextconsensus: String,
     pub witnesses: Vec<Witness>,
-    pub tx: Vec<TransactionResult>
+    pub tx: Vec<TransactionResult>,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -61,25 +61,25 @@ pub struct TransactionResult {
     pub validuntilblock: u64,
     pub signers: Vec<Signer>,
     pub script: String,
-    pub witnesses: Vec<Witness>
+    pub witnesses: Vec<Witness>,
 }
 
 #[derive(Deserialize, Debug, Clone)]
 pub enum AppLogResult {
     BlockAppLogResult(BlockAppLogResult),
-    TransactionAppLogResult(TransactionAppLogResult)
+    TransactionAppLogResult(TransactionAppLogResult),
 }
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct BlockAppLogResult {
     pub blockhash: String,
-    pub executions: Vec<Execution>
+    pub executions: Vec<Execution>,
 }
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct TransactionAppLogResult {
     pub txid: String,
-    pub executions: Vec<Execution>
+    pub executions: Vec<Execution>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -89,39 +89,39 @@ pub struct Execution {
     pub exception: Option<String>,
     pub gasconsumed: String,
     pub stack: Vec<StateValue>,
-    pub notifications: Vec<Notification>
+    pub notifications: Vec<Notification>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Notification {
     pub contract: String,
     pub eventname: String,
-    pub state: State
+    pub state: State,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct State {
     #[serde(rename = "type")]
     pub _type: String,
-    pub value: Vec<StateValue>
+    pub value: Vec<StateValue>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StateValue {
     #[serde(rename = "type")]
     pub _type: String,
-    pub value: Option<serde_json::Value>
+    pub value: Option<serde_json::Value>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Witness {
     pub invocation: String,
-    pub verification: String
+    pub verification: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Signer {
     pub account: String,
     pub scopes: String,
-    pub allowedcontracts: Option<Vec<String>>
+    pub allowedcontracts: Option<Vec<String>>,
 }

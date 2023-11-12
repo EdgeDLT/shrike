@@ -16,9 +16,12 @@ impl AppConfig {
     pub fn new() -> Self {
         Self {
             test_db: false,
-            db_path: DB_PATH.to_str().expect("Failed to convert path").to_string(),
-            node_path: "http://localhost:10332".to_string(),
-            log_level: "your_log_level".to_string(),
+            db_path: DB_PATH
+                .to_str()
+                .expect("Failed to convert path")
+                .to_string(),
+            node_path: String::from("http://localhost:10332"),
+            log_level: String::from("info"),
             batch_size: 1000,
             keep_alive: false,
             keep_alive_interval: 5,

@@ -14,7 +14,7 @@ pub struct Transaction {
     pub script: String,
     pub witnesses: String,
     pub stack_result: String,
-    pub notifications: String
+    pub notifications: String,
 }
 
 #[derive(Debug, Clone)]
@@ -29,7 +29,7 @@ pub struct Block {
     pub next_consensus: String,
     pub reward: f64,
     pub reward_receiver: String,
-    pub witnesses: String
+    pub witnesses: String,
 }
 
 impl Block {

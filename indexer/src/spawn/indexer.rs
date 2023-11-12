@@ -1,9 +1,9 @@
 use std::io;
-use std::time::{SystemTime, Duration};
+use std::time::{Duration, SystemTime};
 
 use anyhow::Context;
 use futures::future::join_all;
-use log::{info, error};
+use log::{error, info};
 use tokio::time::sleep;
 
 use crate::config::AppConfig;
@@ -20,11 +20,7 @@ pub struct Indexer {
 
 impl Indexer {
     pub fn new(client: Client, db: Database, config: AppConfig) -> Self {
-        Self {
-            client,
-            db,
-            config
-        }
+        Self { client, db, config }
     }
 
     pub async fn run(&self) -> Result<(), anyhow::Error> {
@@ -41,25 +37,39 @@ impl Indexer {
             let start_height = stored_height + 1;
             let index_start = SystemTime::now();
             info!("Started indexing.");
-            info!("Start height is {}. {} blocks to process.", start_height, current_height-start_height);
+            info!(
+                "Start height is {}. {} blocks to process.",
+                start_height,
+                current_height - start_height
+            );
 
-            self.initial_sync(start_height, current_height, self.config.batch_size).await?;
+            self.initial_sync(start_height, current_height, self.config.batch_size)
+                .await?;
 
             let index_end = SystemTime::now();
             let index_duration = index_end.duration_since(index_start)?;
-            let new_stored_height = self.db.get_last_index("blocks").context("Failed to get latest stored index")?;
+            let new_stored_height = self
+                .db
+                .get_last_index("blocks")
+                .context("Failed to get latest stored index")?;
             info!("Indexing completed in {} ms.", index_duration.as_millis());
             info!("New stored height is {}.", new_stored_height);
 
             if self.config.keep_alive {
-                self.continuous_sync(new_stored_height + 1, self.config.keep_alive_interval).await?;
+                self.continuous_sync(new_stored_height + 1, self.config.keep_alive_interval)
+                    .await?;
             }
 
             Ok(())
         }
     }
 
-    async fn initial_sync(&self, mut start_height: u64, current_height: u64, batch_size: u64) -> Result<(), anyhow::Error> {
+    async fn initial_sync(
+        &self,
+        mut start_height: u64,
+        current_height: u64,
+        batch_size: u64,
+    ) -> Result<(), anyhow::Error> {
         let mut count = 0;
         info!("Updating tables:");
         while start_height < current_height {
@@ -80,8 +90,7 @@ impl Indexer {
     }
 
     async fn sync_between(&self, start_height: u64, end_height: u64) -> Result<(), anyhow::Error> {
-        let future_blocks = (start_height..end_height)
-            .map(|i| self.client.fetch_full_block(i));
+        let future_blocks = (start_height..end_height).map(|i| self.client.fetch_full_block(i));
         let all_blocks = join_all(future_blocks).await;
 
         // Have to clone to keep all_blocks unmoved for future steps
@@ -90,7 +99,8 @@ impl Indexer {
             .filter_map(|result| {
                 if let Ok((block, _)) = result {
                     Some(
-                        block.tx
+                        block
+                            .tx
                             .iter()
                             .map(move |tx| {
                                 (
@@ -120,43 +130,39 @@ impl Indexer {
             .flatten()
             .collect();
 
-        let (transactions, block_indexes): (Vec<TransactionResult>, Vec<u64>) = transactions_with_index.into_iter().unzip();
+        let (transactions, block_indexes): (Vec<TransactionResult>, Vec<u64>) =
+            transactions_with_index.into_iter().unzip();
 
         let future_transactions = transactions
             .into_iter()
             .map(|tx| self.client.fetch_full_transaction(tx));
         let all_transactions = join_all(future_transactions).await;
 
-        let all_transactions_with_index = all_transactions
-            .into_iter()
-            .zip(block_indexes.into_iter());
+        let all_transactions_with_index =
+            all_transactions.into_iter().zip(block_indexes.into_iter());
 
-        let prepped_blocks = all_blocks
-            .into_iter()
-            .filter_map(|result| {
-                match result {
-                    Ok((b, a)) => Some(conversion::convert_block_result(b, a)),
-                    Err(e) => {
-                        eprintln!("Error fetching or converting block: {:?}", e);
-                        None
-                    }
-                }
-            });
+        let prepped_blocks = all_blocks.into_iter().filter_map(|result| match result {
+            Ok((b, a)) => Some(conversion::convert_block_result(b, a)),
+            Err(e) => {
+                eprintln!("Error fetching or converting block: {:?}", e);
+                None
+            }
+        });
 
-        let prepped_tx = all_transactions_with_index
-            .into_iter()
-            .filter_map(|(result, block_index)| {
-                match result {
-                    Ok((t, a)) => Some(conversion::convert_transaction_result(t, a, block_index)),
-                    Err(e) => {
-                        eprintln!("Error fetching or converting transaction: {:?}", e);
-                        None
-                    }
+        let prepped_tx = all_transactions_with_index.into_iter().filter_map(
+            |(result, block_index)| match result {
+                Ok((t, a)) => Some(conversion::convert_transaction_result(t, a, block_index)),
+                Err(e) => {
+                    eprintln!("Error fetching or converting transaction: {:?}", e);
+                    None
                 }
-            });
+            },
+        );
 
         // synced rollback point
-        self.db.insert_blocks_transactions(prepped_blocks, prepped_tx).context("Failed to insert data")?;
+        self.db
+            .insert_blocks_transactions(prepped_blocks, prepped_tx)
+            .context("Failed to insert data")?;
 
         Ok(())
     }
@@ -167,7 +173,8 @@ impl Indexer {
             let new_height = self.client.get_current_height().await?;
             if new_height > current_height {
                 info!("New block(s) detected. Updating tables..");
-                self.initial_sync(current_height, new_height, self.config.batch_size).await?;
+                self.initial_sync(current_height, new_height, self.config.batch_size)
+                    .await?;
                 current_height = new_height;
             }
             sleep(Duration::from_secs(interval)).await;

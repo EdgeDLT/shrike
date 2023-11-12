@@ -51,7 +51,7 @@ The Indexer is primarily built and tested on **Windows 10**. Though less thoroug
 3. Follow the prompt to download NeoGo if you haven't already.
 4. Allow some time for the process to complete.
 
-A keep-alive mode is available to keep the Indexer active and listening for blocks. Blocks are synced as soon as they are detected. Activate this mode with the `-k` / `--keep-alive` flag, e.g., `cargo run --release -- -k`.
+A keep-alive mode is available to keep the Indexer active and listening for blocks. Blocks are synced as soon as they are detected. Activate this mode in the `config.rs` file.
 
 ### Notes
 

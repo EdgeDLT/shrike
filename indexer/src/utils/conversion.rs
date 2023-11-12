@@ -1,11 +1,12 @@
 use lib::neo::base64_to_address;
 use serde_json::to_string;
 
-use crate::rpc::models::{BlockResult, BlockAppLogResult, TransactionResult, TransactionAppLogResult};
 use crate::db::model::{Block, Transaction};
+use crate::rpc::models::{
+    BlockAppLogResult, BlockResult, TransactionAppLogResult, TransactionResult,
+};
 
 pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
-
     let block_reward = &a.executions[1].notifications[0].state.value[2].value;
     let block_receiver = &a.executions[1].notifications[0].state.value[1].value;
 
@@ -28,12 +29,15 @@ pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
         next_consensus: r.nextconsensus,
         reward: reward_as_float,
         reward_receiver: address,
-        witnesses: to_string(&r.witnesses).unwrap()
+        witnesses: to_string(&r.witnesses).unwrap(),
     }
 }
 
-pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResult, block_height: u64) -> Transaction {
-
+pub fn convert_transaction_result(
+    t: TransactionResult,
+    a: TransactionAppLogResult,
+    block_height: u64,
+) -> Transaction {
     let state = &a.executions[0].vmstate;
     let stack = &a.executions[0].stack;
     let notifs = &a.executions[0].notifications;
@@ -53,6 +57,6 @@ pub fn convert_transaction_result(t: TransactionResult, a: TransactionAppLogResu
         script: t.script,
         witnesses: to_string(&t.witnesses).unwrap(),
         stack_result: to_string(&stack).unwrap(),
-        notifications: to_string(&notifs).unwrap()
+        notifications: to_string(&notifs).unwrap(),
     }
 }

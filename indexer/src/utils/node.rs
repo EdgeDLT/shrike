@@ -1,8 +1,8 @@
-use tokio::{fs::File, io::AsyncWriteExt};
-use text_io::read;
 use log::{info, warn};
+use text_io::read;
+use tokio::{fs::File, io::AsyncWriteExt};
 
-use std::{path::Path, io, env, process::Command};
+use std::{env, io, path::Path, process::Command};
 
 // move these to config in future
 #[cfg(target_os = "linux")]
@@ -13,11 +13,14 @@ pub static NEOGO_PATH: &str = "./neogo";
 pub static NEOGO_PATH: &str = "./neogo.exe";
 
 #[cfg(target_os = "linux")]
-static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-linux-amd64";
+static NEOGO_DL: &str =
+    "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-linux-amd64";
 #[cfg(target_os = "macos")]
-static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-darwin-arm64";
+static NEOGO_DL: &str =
+    "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-darwin-arm64";
 #[cfg(target_os = "windows")]
-static NEOGO_DL: &str = "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-windows-amd64.exe";
+static NEOGO_DL: &str =
+    "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-windows-amd64.exe";
 
 pub async fn check_neogo() -> io::Result<()> {
     let path = Path::new(NEOGO_PATH);

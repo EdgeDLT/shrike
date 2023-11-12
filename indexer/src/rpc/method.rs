@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use super::models::{BlockResult, AppLogResult, NeoParam};
+use super::models::{AppLogResult, BlockResult, NeoParam};
 
 pub trait RpcMethod {
     type ReturnType: for<'de> Deserialize<'de>;
@@ -36,7 +36,10 @@ impl RpcMethod for GetBlock {
     }
 
     fn params(&self) -> Vec<NeoParam> {
-        vec![NeoParam::Integer(self.block_height), NeoParam::Integer(self.verbosity as u64)]
+        vec![
+            NeoParam::Integer(self.block_height),
+            NeoParam::Integer(self.verbosity as u64),
+        ]
     }
 }
 

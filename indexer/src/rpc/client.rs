@@ -1,10 +1,13 @@
-use reqwest::Client as ReqwestClient;
 use anyhow::Result;
+use reqwest::Client as ReqwestClient;
 
 use crate::config::AppConfig;
 
-use super::method::{RpcMethod, GetBlockCount, GetBlock, GetApplicationLog};
-use super::models::{BlockResult, RpcResponse, RpcRequest, BlockAppLogResult, TransactionResult, TransactionAppLogResult};
+use super::method::{GetApplicationLog, GetBlock, GetBlockCount, RpcMethod};
+use super::models::{
+    BlockAppLogResult, BlockResult, RpcRequest, RpcResponse, TransactionAppLogResult,
+    TransactionResult,
+};
 
 pub struct Client {
     client: ReqwestClient,
@@ -19,14 +22,19 @@ impl Client {
         }
     }
 
-    pub async fn send_request<T: RpcMethod, R: serde::de::DeserializeOwned>(&self, method: T) -> Result<R, reqwest::Error> {
+    pub async fn send_request<T: RpcMethod, R: serde::de::DeserializeOwned>(
+        &self,
+        method: T,
+    ) -> Result<R, reqwest::Error> {
         let request_body = RpcRequest {
             jsonrpc: "2.0".to_string(),
             id: 1,
             method: method.method_name().to_string(),
             params: method.params(),
         };
-        let response: RpcResponse<R> = self.client.post(&self.base_url)
+        let response: RpcResponse<R> = self
+            .client
+            .post(&self.base_url)
             .json(&request_body)
             .send()
             .await?
@@ -42,12 +50,24 @@ impl Client {
     }
 
     pub async fn get_block(&self, height: u64) -> Result<BlockResult> {
-        let response = self.send_request(GetBlock { block_height: height, verbosity: 1 }).await?;
+        let response = self
+            .send_request(GetBlock {
+                block_height: height,
+                verbosity: 1,
+            })
+            .await?;
         Ok(response)
     }
 
-    pub async fn get_application_log<T: serde::de::DeserializeOwned>(&self, hash: &str) -> Result<T> {
-        let app_log = self.send_request(GetApplicationLog { hash: hash.to_string() }).await?;
+    pub async fn get_application_log<T: serde::de::DeserializeOwned>(
+        &self,
+        hash: &str,
+    ) -> Result<T> {
+        let app_log = self
+            .send_request(GetApplicationLog {
+                hash: hash.to_string(),
+            })
+            .await?;
         Ok(app_log)
     }
 
@@ -58,7 +78,10 @@ impl Client {
         Ok((block, block_app_log))
     }
 
-    pub async fn fetch_full_transaction(&self, tx: TransactionResult) -> Result<(TransactionResult, TransactionAppLogResult)> {
+    pub async fn fetch_full_transaction(
+        &self,
+        tx: TransactionResult,
+    ) -> Result<(TransactionResult, TransactionAppLogResult)> {
         let tx_app_log: TransactionAppLogResult = self.get_application_log(&tx.hash).await?;
 
         Ok((tx, tx_app_log))
