@@ -13,10 +13,10 @@ Each component has its own README with instructions for use. Contributions in th
 
 To get started with Shrike, visit the README for the component you want to use:
 
-- [Indexer README](./indexer/README.md)
-- [API README](./api/README.md)
-- [GUI README](./gui/README.md)
-- [Lib README](./lib/README.md)
+- [Indexer readme](./indexer/README.md)
+- [API readme](./api/README.md)
+- [GUI readme](./gui/README.md)
+- [Lib readme](./lib/README.md)
 
 ## Acknowledgements
 
