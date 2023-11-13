@@ -1,10 +1,10 @@
-use log::{info, warn};
+use log::warn;
 use tokio::io::{AsyncBufReadExt, BufReader, Lines};
 use tokio::process::{ChildStderr, Command};
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;
 
-use crate::utils::node;
+use crate::utils::{node, logger};
 use regex::Regex;
 use std::process::Stdio;
 
@@ -34,7 +34,8 @@ pub async fn sync_node(
         if line.contains("headerHeight") {
             if let Some(caps) = re.captures(&line) {
                 let height = caps.get(1).unwrap().as_str().parse::<u64>().unwrap();
-                info!("Current node height: {}", height);
+                logger::inline_print(&format!("\rCurrent height: {}", height));
+
                 if max_height != 0 && height >= max_height {
                     warn!("Exceeded target height.");
                     break;
@@ -45,6 +46,7 @@ pub async fn sync_node(
         }
 
         if line.contains("synchronized") {
+            println!();
             break;
         }
     }

@@ -1,6 +1,8 @@
 use anyhow::Result;
 use log::LevelFilter;
 
+use std::io::{self, Write};
+
 use crate::config::AppConfig;
 
 pub fn init() -> Result<()> {
@@ -19,4 +21,9 @@ pub fn init() -> Result<()> {
         .init();
 
     Ok(())
+}
+
+pub fn inline_print(message: &str) {
+    print!("{}", message);
+    io::stdout().flush().unwrap();
 }

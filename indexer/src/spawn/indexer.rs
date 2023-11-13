@@ -1,16 +1,15 @@
-use std::io;
-use std::time::{Duration, SystemTime};
-
 use anyhow::Context;
 use futures::future::join_all;
 use log::{error, info};
 use tokio::time::sleep;
 
+use std::time::{Duration, SystemTime};
+
 use crate::config::AppConfig;
 use crate::db::database::Database;
 use crate::rpc::client::Client;
 use crate::rpc::models::TransactionResult;
-use crate::utils::conversion;
+use crate::utils::{conversion, logger};
 
 pub struct Indexer {
     client: Client,
@@ -82,8 +81,7 @@ impl Indexer {
             count += end_height - start_height;
             start_height = end_height;
 
-            print!("\rIndexed {} blocks.", count);
-            io::Write::flush(&mut io::stdout()).unwrap();
+            logger::inline_print(&format!("\rIndexed {} block(s).", count));
         }
         println!();
         Ok(())
@@ -169,16 +167,18 @@ impl Indexer {
 
     async fn continuous_sync(&self, start_height: u64, interval: u64) -> Result<(), anyhow::Error> {
         let mut current_height = start_height;
+
+        info!("Listening for new blocks:");
         loop {
             let new_height = self.client.get_current_height().await?;
             if new_height > current_height {
-                info!("New block(s) detected. Updating tables..");
-                self.initial_sync(current_height, new_height, self.config.batch_size)
+                self.sync_between(current_height, new_height)
                     .await?;
+
+                logger::inline_print(&format!("\rCurrent synced height: {}", new_height));
                 current_height = new_height;
             }
             sleep(Duration::from_secs(interval)).await;
         }
     }
-    // TODO: Continuous sync
 }
