@@ -23,7 +23,7 @@ impl AppConfig {
             node_path: String::from("http://localhost:10332"),
             log_level: String::from("info"),
             batch_size: 1000,
-            keep_alive: true,
+            keep_alive: false,
             keep_alive_interval: 5,
             height_limit: 0,
         }

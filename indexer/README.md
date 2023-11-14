@@ -1,6 +1,6 @@
 # Indexer
 
-The Indexer is a key component of Shrike, responsible for synchronizing a NeoGo instance, fetching blockchain data, and processing it into SQLite tables.
+The Indexer is a key component of Shrike. It uses a local node to process Neo N3 blocks and transactions into a more easily queried format.
 
 ## Features
 

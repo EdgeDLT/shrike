@@ -59,6 +59,8 @@ async fn run() -> Result<()> {
         .context("Failed to create txid index")?;
     db.create_index("idx_tx_senders", "transactions", "sender")
         .context("Failed to create txsender index")?;
+    db.create_index("idx_transaction_block_index", "transactions", "block_index")
+        .context("Failed to create transaction block index")?;
 
     // some setup
     let index_result = db
