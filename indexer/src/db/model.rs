@@ -39,7 +39,7 @@ impl Block {
             size: 114,
             version: 0,
             merkle_root: String::from("0x0000000000000000000000000000000000000000000000000000000000000000"),
-            time: 1468595301000,
+            time: 1_468_595_301_000,
             nonce: String::from("000000007C2BAC1D"),
             speaker: 0,
             next_consensus: String::from("NSiVJYZej4XsxG5CUpdwn7VRQk8iiiDMPM"),

@@ -27,9 +27,7 @@ pub async fn check_neogo() -> io::Result<()> {
     if !path.exists() {
         warn!("NeoGo not found in directory. Install? (y/n)");
         let answer: char = read!();
-        if answer != 'y' {
-            panic!("User declined to install NeoGo.")
-        }
+        assert!((answer == 'y'), "User declined to install NeoGo.");
 
         let mut file = File::create(path).await?;
         let mut response = reqwest::get(NEOGO_DL).await.unwrap();

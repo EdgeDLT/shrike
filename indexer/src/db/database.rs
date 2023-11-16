@@ -28,23 +28,20 @@ impl Database {
         let wal_active: String = self
             .conn
             .query_row("PRAGMA journal_mode", [], |row| row.get(0))?;
-        if wal_active != "wal" {
+        if wal_active == "wal" {
+            info!("WAL mode already active.");
+        } else {
             let _: String = self
                 .conn
                 .query_row("PRAGMA journal_mode=WAL", [], |row| row.get(0))?;
             info!("Set db to WAL mode.");
-        } else {
-            info!("WAL mode already active.");
         }
 
         Ok(())
     }
 
     pub fn create_index(&self, name: &str, table: &str, column: &str) -> Result<usize> {
-        let sql = format!(
-            "CREATE INDEX IF NOT EXISTS {} ON {} ({})",
-            name, table, column
-        );
+        let sql = format!("CREATE INDEX IF NOT EXISTS {name} ON {table} ({column})");
         let result = self.conn.execute(&sql, [])?;
 
         Ok(result)
@@ -99,7 +96,7 @@ impl Database {
         Ok(result)
     }
 
-    pub fn insert_into_block_table(&self, block: Block) -> Result<usize> {
+    pub fn insert_into_block_table(&self, block: &Block) -> Result<usize> {
         let sql = "INSERT INTO blocks (
             id, hash, size, version, merkle_root, time,
             nonce, speaker, next_consensus, reward, reward_receiver, witnesses
@@ -185,17 +182,14 @@ impl Database {
 
         let result = tx.commit();
         if let Err(e) = result {
-            println!("Error committing transaction: {:?}", e);
+            println!("Error committing transaction: {e:?}");
         }
 
         Ok(())
     }
 
     pub fn get_last_index(&self, table: &str) -> Result<u64> {
-        let sql = &format!(
-            "SELECT id FROM {} WHERE id=(SELECT max(id) FROM {})",
-            table, table
-        );
+        let sql = &format!("SELECT id FROM {table} WHERE id=(SELECT max(id) FROM {table})");
         let mut stmt = self.conn.prepare(sql)?;
         let index: u64 = stmt.query_row([], |row| row.get(0))?;
 
@@ -204,7 +198,7 @@ impl Database {
 
     #[allow(dead_code)]
     pub fn drop_table(&self, table: &str) -> Result<usize> {
-        let result = self.conn.execute(&format!("DROP TABLE {}", table), [])?;
+        let result = self.conn.execute(&format!("DROP TABLE {table}"), [])?;
 
         Ok(result)
     }

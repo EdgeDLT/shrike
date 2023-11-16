@@ -1,11 +1,10 @@
-use anyhow::Result;
 use log::LevelFilter;
 
 use std::io::{self, Write};
 
 use crate::config::AppConfig;
 
-pub fn init() -> Result<()> {
+pub fn init() {
     let config = AppConfig::new();
     let level = match config.log_level.as_str() {
         "debug" => LevelFilter::Debug,
@@ -19,11 +18,9 @@ pub fn init() -> Result<()> {
         .filter_level(level)
         .format_timestamp(None)
         .init();
-
-    Ok(())
 }
 
 pub fn inline_print(message: &str) {
-    print!("{}", message);
+    print!("{message}");
     io::stdout().flush().unwrap();
 }

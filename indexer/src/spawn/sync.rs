@@ -8,7 +8,7 @@ use crate::utils::{logger, node};
 use regex::Regex;
 use std::process::Stdio;
 
-pub async fn sync_node(
+pub async fn run_node(
     max_height: u64,
 ) -> Result<
     (
@@ -34,13 +34,11 @@ pub async fn sync_node(
         if line.contains("headerHeight") {
             if let Some(caps) = re.captures(&line) {
                 let height = caps.get(1).unwrap().as_str().parse::<u64>().unwrap();
-                logger::inline_print(&format!("\rCurrent height: {}", height));
+                logger::inline_print(&format!("\rCurrent height: {height}"));
 
                 if max_height != 0 && height >= max_height {
                     warn!("Exceeded target height.");
                     break;
-                } else {
-                    continue;
                 }
             }
         }

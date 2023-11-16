@@ -15,14 +15,14 @@ use db::database::Database as LocalDatabase;
 use db::model::Block;
 use rpc::client::Client as RpcClient;
 use spawn::indexer::Indexer;
+use utils::logger;
 
-use spawn::sync::sync_node;
-use utils::logger::init;
+use spawn::sync::run_node;
 use utils::node::check_neogo;
 
 #[tokio::main]
 async fn main() {
-    init().expect("Failed to initialize logger");
+    logger::init();
 
     if let Err(e) = run().await {
         error!("Application error: {:?}", e);
@@ -66,23 +66,21 @@ async fn run() -> Result<()> {
     let index_result = db
         .get_last_index("blocks")
         .context("Failed to get last stored block index");
-    match index_result {
-        Ok(value) => {
-            info!("Last stored block index: {}", value);
-            value
-        }
-        Err(_) => {
-            info!("No rows in table yet. Adding first entry...");
-            db.insert_into_block_table(Block::genesis_block())
-                .context("Failed to insert genesis block")?;
-            0
-        }
+
+    if let Ok(value) = index_result {
+        info!("Last stored block index: {}", value);
+        value
+    } else {
+        info!("No rows in table yet. Adding first entry...");
+        db.insert_into_block_table(&Block::genesis_block())
+            .context("Failed to insert genesis block")?;
+        0
     };
 
     // spawn the node and wait for the sync to complete
     info!("Starting node sync..");
     let start = SystemTime::now();
-    let (_stderr_out, handle, shutdown_tx) = sync_node(config.height_limit)
+    let (_stderr_out, handle, shutdown_tx) = run_node(config.height_limit)
         .await
         .context("Failed to sync node")?;
 

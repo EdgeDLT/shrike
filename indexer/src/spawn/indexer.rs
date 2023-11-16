@@ -80,7 +80,7 @@ impl Indexer {
             count += end_height - start_height;
             start_height = end_height;
 
-            logger::inline_print(&format!("\rIndexed {} block(s).", count));
+            logger::inline_print(&format!("\rIndexed {count} block(s)."));
         }
         println!();
         Ok(())
@@ -139,18 +139,18 @@ impl Indexer {
             all_transactions.into_iter().zip(block_indexes.into_iter());
 
         let prepped_blocks = all_blocks.into_iter().filter_map(|result| match result {
-            Ok((b, a)) => Some(conversion::convert_block_result(b, a)),
+            Ok((b, a)) => Some(conversion::convert_block_result(b, &a)),
             Err(e) => {
-                eprintln!("Error fetching or converting block: {:?}", e);
+                eprintln!("Error fetching or converting block: {e:?}");
                 None
             }
         });
 
         let prepped_tx = all_transactions_with_index.into_iter().filter_map(
             |(result, block_index)| match result {
-                Ok((t, a)) => Some(conversion::convert_transaction_result(t, a, block_index)),
+                Ok((t, a)) => Some(conversion::convert_transaction_result(t, &a, block_index)),
                 Err(e) => {
-                    eprintln!("Error fetching or converting transaction: {:?}", e);
+                    eprintln!("Error fetching or converting transaction: {e:?}");
                     None
                 }
             },
@@ -173,7 +173,7 @@ impl Indexer {
             if new_height > current_height {
                 self.sync_between(current_height, new_height).await?;
 
-                logger::inline_print(&format!("\rCurrent synced height: {}", new_height));
+                logger::inline_print(&format!("\rCurrent synced height: {new_height}"));
                 current_height = new_height;
             }
             sleep(Duration::from_secs(interval)).await;

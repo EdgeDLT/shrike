@@ -6,13 +6,13 @@ use crate::rpc::models::{
     BlockAppLogResult, BlockResult, TransactionAppLogResult, TransactionResult,
 };
 
-pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
+pub fn convert_block_result(r: BlockResult, a: &BlockAppLogResult) -> Block {
     let block_reward = &a.executions[1].notifications[0].state.value[2].value;
     let block_receiver = &a.executions[1].notifications[0].state.value[1].value;
 
     let reward_string = block_reward.clone().unwrap().as_str().unwrap().to_string();
     let reward = reward_string.parse::<u64>().unwrap();
-    let reward_as_float = reward as f64 / 100000000_f64;
+    let reward_as_float = reward as f64 / 100_000_000_f64;
 
     let receiver = serde_json::to_string(block_receiver).unwrap();
     let stripped = &receiver[1..29];
@@ -35,7 +35,7 @@ pub fn convert_block_result(r: BlockResult, a: BlockAppLogResult) -> Block {
 
 pub fn convert_transaction_result(
     t: TransactionResult,
-    a: TransactionAppLogResult,
+    a: &TransactionAppLogResult,
     block_height: u64,
 ) -> Transaction {
     let state = &a.executions[0].vmstate;

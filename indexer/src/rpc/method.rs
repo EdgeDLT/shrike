@@ -38,7 +38,7 @@ impl RpcMethod for GetBlock {
     fn params(&self) -> Vec<NeoParam> {
         vec![
             NeoParam::Integer(self.block_height),
-            NeoParam::Integer(self.verbosity as u64),
+            NeoParam::Integer(u64::from(self.verbosity)),
         ]
     }
 }
