@@ -1,8 +1,8 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Error {
-    pub error: String
+    pub error: String,
 }
 
 #[allow(dead_code, clippy::enum_variant_names)]
@@ -10,5 +10,5 @@ pub enum Errors {
     SqlError,
     RequestError,
     RateLimitError,
-    NotImplementedError
+    NotImplementedError,
 }

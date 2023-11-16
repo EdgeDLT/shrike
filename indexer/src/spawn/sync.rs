@@ -4,7 +4,7 @@ use tokio::process::{ChildStderr, Command};
 use tokio::sync::oneshot;
 use tokio::task::JoinHandle;
 
-use crate::utils::{node, logger};
+use crate::utils::{logger, node};
 use regex::Regex;
 use std::process::Stdio;
 

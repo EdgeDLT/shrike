@@ -1,2 +1,2 @@
-pub mod neo;
 pub mod db;
+pub mod neo;

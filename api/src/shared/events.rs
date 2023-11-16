@@ -1,8 +1,8 @@
-use crate::shared::models::{Transfer, Transaction, TxData};
+use crate::shared::models::{Transaction, Transfer, TxData};
 
 use lib::neo;
 
-use super::models::{GAS_PRECISION, FUSDT_PRECISION};
+use super::models::{FUSDT_PRECISION, GAS_PRECISION};
 
 // now supports inbound and outbound (dictated by sender field and from/to, depending on requirements)
 // still needs work to support all contract decimals properly
@@ -14,15 +14,14 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
     let notifications = tx.notifications.as_array().unwrap();
 
     for notification in notifications {
-
         let state = notification["state"].clone();
 
         if notification["eventname"] == "Transfer"
             && state["type"] == "Array"
-            && state["value"][0]["type"] == "ByteString" || state["value"][0]["type"] == "Any"
-            && state["value"][1]["type"] == "ByteString" || state["value"][1]["type"] == "Any"
-            && state["value"][2]["type"] == "Integer" {
-
+            && state["value"][0]["type"] == "ByteString"
+            || state["value"][0]["type"] == "Any" && state["value"][1]["type"] == "ByteString"
+            || state["value"][1]["type"] == "Any" && state["value"][2]["type"] == "Integer"
+        {
             let contract = notification["contract"].as_str().unwrap().to_string();
 
             let from = if state["value"][0]["value"].is_string() {
@@ -48,15 +47,15 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
                     } else {
                         v / GAS_PRECISION
                     }
-                },
-                Err(_) => continue
+                }
+                Err(_) => continue,
             };
 
             let transfer = Transfer {
                 contract,
                 from,
                 to,
-                amount // this will break on non-8 decimal contracts, will need contract table
+                amount, // this will break on non-8 decimal contracts, will need contract table
             };
 
             transfers.push(transfer);
@@ -69,6 +68,6 @@ pub fn get_transfer_events(tx: Transaction) -> TxData {
         sysfee: tx.sysfee.parse::<f64>().unwrap() / GAS_PRECISION,
         netfee: tx.netfee.parse::<f64>().unwrap() / GAS_PRECISION,
         nep17_transfers: transfers,
-        nep11_transfers: Vec::new()
+        nep11_transfers: Vec::new(),
     }
 }

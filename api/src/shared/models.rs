@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 pub const GAS_PRECISION: f64 = 100000000.0;
@@ -24,7 +24,7 @@ pub struct Transaction {
     pub script: String,
     pub witnesses: Value,
     pub stack_result: Value,
-    pub notifications: Value
+    pub notifications: Value,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -37,7 +37,7 @@ pub struct Transfer {
     pub contract: Hash160,
     pub from: Address,
     pub to: Address,
-    pub amount: f64
+    pub amount: f64,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -47,14 +47,14 @@ pub struct TxData {
     pub sysfee: f64,
     pub netfee: f64,
     pub nep17_transfers: Vec<Transfer>,
-    pub nep11_transfers: Vec<Transfer>
+    pub nep11_transfers: Vec<Transfer>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct TxDataList {
     pub address: String,
     pub as_sender: Vec<TxData>,
-    pub as_participant: Vec<TxData>
+    pub as_participant: Vec<TxData>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]

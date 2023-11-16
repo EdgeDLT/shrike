@@ -10,7 +10,6 @@ use crate::db::database::Database;
 use crate::rpc::client::Client;
 use crate::rpc::models::TransactionResult;
 use crate::utils::{conversion, logger};
-
 pub struct Indexer {
     client: Client,
     db: Database,
@@ -172,8 +171,7 @@ impl Indexer {
         loop {
             let new_height = self.client.get_current_height().await?;
             if new_height > current_height {
-                self.sync_between(current_height, new_height)
-                    .await?;
+                self.sync_between(current_height, new_height).await?;
 
                 logger::inline_print(&format!("\rCurrent synced height: {}", new_height));
                 current_height = new_height;

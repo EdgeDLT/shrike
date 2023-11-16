@@ -1,11 +1,11 @@
 use directories_next::ProjectDirs;
 use once_cell::sync::Lazy;
 
-use std::{path::PathBuf, fs};
+use std::{fs, path::PathBuf};
 
 pub static DB_PATH: Lazy<PathBuf> = Lazy::new(|| {
-    let project_dirs = ProjectDirs::from("", "", "Shrike")
-        .expect("Failed to get project directories");
+    let project_dirs =
+        ProjectDirs::from("", "", "Shrike").expect("Failed to get project directories");
     let mut path = project_dirs.data_local_dir().to_path_buf();
     path.push("shrike.db3");
 
