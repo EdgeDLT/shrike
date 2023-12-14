@@ -41,21 +41,8 @@ ProtocolConfiguration:
   Hardforks:
     Aspidochelone: 1730000
     Basilisk: 4120000
-  NativeActivations:
-    ContractManagement: [0]
-    StdLib: [0]
-    CryptoLib: [0]
-    LedgerContract: [0]
-    NeoToken: [0]
-    GasToken: [0]
-    PolicyContract: [0]
-    RoleManagement: [0]
-    OracleContract: [0]
-
 ApplicationConfiguration:
   SkipBlockVerification: false
-  KeepOnlyLatestState: false
-  RemoveUntraceableBlocks: false
   # LogPath could be set up in case you need stdout logs to some proper file.
   # LogPath: "./log/neogo.log"
   DBConfiguration:

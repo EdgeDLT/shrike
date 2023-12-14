@@ -14,13 +14,13 @@ pub static NEOGO_PATH: &str = "./neogo.exe";
 
 #[cfg(target_os = "linux")]
 static NEOGO_DL: &str =
-    "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-linux-amd64";
+    "https://github.com/nspcc-dev/neo-go/releases/download/v0.104.0/neo-go-linux-amd64";
 #[cfg(target_os = "macos")]
 static NEOGO_DL: &str =
-    "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-darwin-arm64";
+    "https://github.com/nspcc-dev/neo-go/releases/download/v0.104.0/neo-go-darwin-arm64";
 #[cfg(target_os = "windows")]
 static NEOGO_DL: &str =
-    "https://github.com/nspcc-dev/neo-go/releases/download/v0.103.1/neo-go-windows-amd64.exe";
+    "https://github.com/nspcc-dev/neo-go/releases/download/v0.104.0/neo-go-windows-amd64.exe";
 
 pub async fn check_neogo() -> io::Result<()> {
     let path = Path::new(NEOGO_PATH);

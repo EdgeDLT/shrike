@@ -141,8 +141,7 @@ impl Indexer {
         let prepped_blocks = all_blocks.into_iter().filter_map(|result| match result {
             Ok((b, a)) => Some(conversion::convert_block_result(b, &a)),
             Err(e) => {
-                eprintln!("Error fetching or converting block: {e:?}");
-                None
+                panic!("Error fetching or converting block: {e:?}");
             }
         });
 
@@ -150,8 +149,7 @@ impl Indexer {
             |(result, block_index)| match result {
                 Ok((t, a)) => Some(conversion::convert_transaction_result(t, &a, block_index)),
                 Err(e) => {
-                    eprintln!("Error fetching or converting transaction: {e:?}");
-                    None
+                    panic!("Error fetching or converting transaction: {e:?}");
                 }
             },
         );

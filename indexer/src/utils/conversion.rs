@@ -1,4 +1,4 @@
-use lib::neo::base64_to_address;
+use lib::neo::{base64_to_address, base64_to_hex};
 use serde_json::to_string;
 
 use crate::db::model::{Block, Transaction};
@@ -54,7 +54,7 @@ pub fn convert_transaction_result(
         netfee: t.netfee,
         valid_until: t.validuntilblock,
         signers: to_string(&t.signers).unwrap(),
-        script: t.script,
+        script: base64_to_hex(&t.script),
         witnesses: to_string(&t.witnesses).unwrap(),
         stack_result: to_string(&stack).unwrap(),
         notifications: to_string(&notifs).unwrap(),

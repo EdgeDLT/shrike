@@ -3,7 +3,7 @@ use sha2::{Digest, Sha256};
 
 pub const ALPHABET: &[u8] = b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
-pub fn base64_to_scripthash(encoded: &str) -> String {
+pub fn base64_to_hex(encoded: &str) -> String {
     let bytes = base64::decode(encoded).unwrap();
     hex::encode(bytes)
 }
@@ -22,7 +22,7 @@ pub fn scripthash_to_address(script_hash: &str) -> String {
 }
 
 pub fn base64_to_address(encoded: &str) -> String {
-    let script_hash = base64_to_scripthash(encoded);
+    let script_hash = base64_to_hex(encoded);
     scripthash_to_address(&script_hash)
 }
 

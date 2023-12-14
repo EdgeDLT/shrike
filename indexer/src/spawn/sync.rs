@@ -41,6 +41,8 @@ pub async fn run_node(
                     break;
                 }
             }
+        } else {
+            // println!("{}", line); // for debugging
         }
 
         if line.contains("synchronized") {
