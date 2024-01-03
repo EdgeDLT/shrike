@@ -2,6 +2,39 @@
 
 The Indexer is a key component of Shrike. It uses a local node to process Neo N3 blocks and transactions into a more easily queried format.
 
+
+```
+PS > cargo run --release
+    Finished release [optimized] target(s) in 1.85s
+     Running `..\shrike\target\release\indexer.exe`
+[INFO  indexer::db::database] Using database at ..\AppData\Local\Shrike\data\shrike.db3.
+[INFO  indexer] Welcome to Shrike!
+[INFO  indexer] Checking for NeoGo..
+[INFO  indexer::db::database] WAL mode already active.
+[INFO  indexer] Last stored block index: 4615157
+[INFO  indexer] Starting node sync..
+
+    _   ____________        __________
+   / | / / ____/ __ \      / ____/ __ \
+  /  |/ / __/ / / / /_____/ / __/ / / /
+ / /|  / /___/ /_/ /_____/ /_/ / /_/ /
+/_/ |_/_____/\____/      \____/\____/
+
+/NEO-GO:0.105.0/
+
+Current height: 4677439
+[INFO  indexer] Sync completed in 95482 ms.
+[INFO  indexer::spawn::indexer] Chain height is 4677745.
+[INFO  indexer::spawn::indexer] Started indexing.
+[INFO  indexer::spawn::indexer] Start height is 4615158. 62587 blocks to process.
+[INFO  indexer::spawn::indexer] Updating tables:
+Indexed 62587 block(s).
+[INFO  indexer::spawn::indexer] Indexing completed in 41335 ms.
+[INFO  indexer::spawn::indexer] New stored height is 4677744.
+[WARN  indexer::spawn::sync] Shutdown signal received.
+[WARN  indexer::spawn::sync] Node killed.
+```
+
 ## Features
 
 - Synchronizes a NeoGo instance.
