@@ -25,9 +25,23 @@ async fn main() {
     logger::init();
 
     if let Err(e) = run().await {
+        // if let Err(e) = dev_run().await {
         error!("Application error: {:?}", e);
         std::process::exit(1);
     }
+}
+
+// shortcut for development runs
+#[allow(dead_code)]
+async fn dev_run() -> Result<()> {
+    let config = AppConfig::new();
+
+    check_neogo(&config)
+        .await
+        .context("Failed to confirm NeoGo install")?;
+
+    info!("Dev run complete");
+    Ok(())
 }
 
 async fn run() -> Result<()> {
@@ -39,7 +53,7 @@ async fn run() -> Result<()> {
     info!("Welcome to Shrike!");
     info!("Checking for NeoGo..");
 
-    check_neogo()
+    check_neogo(&config)
         .await
         .context("Failed to confirm NeoGo install")?;
 

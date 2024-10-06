@@ -5,6 +5,7 @@ pub struct AppConfig {
     pub test_db: bool,
     pub db_path: String,
     pub node_path: String,
+    pub node_version: String,
     pub log_level: String,
     pub batch_size: u64,
     pub keep_alive: bool,
@@ -21,6 +22,7 @@ impl AppConfig {
                 .expect("Failed to convert path")
                 .to_string(),
             node_path: String::from("http://localhost:10332"),
+            node_version: String::from("v0.106.3"),
             log_level: String::from("info"),
             batch_size: 25,
             keep_alive: false,
