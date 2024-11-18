@@ -145,19 +145,43 @@ impl Indexer {
             }
         });
 
-        let prepped_tx = all_transactions_with_index.into_iter().filter_map(
-            |(result, block_index)| match result {
+        let prepped_tx: Vec<_> = all_transactions_with_index
+            .into_iter()
+            .filter_map(|(result, block_index)| match result {
                 Ok((t, a)) => Some(conversion::convert_transaction_result(t, &a, block_index)),
                 Err(e) => {
                     panic!("Error fetching or converting transaction: {e:?}");
                 }
-            },
-        );
+            })
+            .collect();
+
+        let prepped_contracts = prepped_tx.iter().flat_map(|transaction| {
+            conversion::convert_contract_result(
+                transaction.script.clone(),
+                serde_json::from_str(&transaction.notifications).unwrap(),
+                transaction.block_index,
+            )
+        });
+
+        let prepped_addresses = prepped_tx.iter().flat_map(|transaction| {
+            conversion::convert_address_result(
+                serde_json::from_str(&transaction.notifications).unwrap(),
+                transaction.block_index,
+            )
+        });
 
         // synced rollback point
         self.db
-            .insert_blocks_transactions(prepped_blocks, prepped_tx)
+            .insert_blocks_transactions(prepped_blocks, prepped_tx.iter().cloned())
             .context("Failed to insert data")?;
+
+        self.db
+            .insert_contracts(prepped_contracts)
+            .context("Failed to insert contracts")?;
+
+        self.db
+            .insert_addresses(prepped_addresses)
+            .context("Failed to insert addresses")?;
 
         Ok(())
     }
