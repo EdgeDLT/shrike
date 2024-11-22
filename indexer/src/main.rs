@@ -65,6 +65,10 @@ async fn run() -> Result<()> {
         .context("Failed to create block table")?;
     db.create_transaction_table()
         .context("Failed to create transaction table")?;
+    db.create_address_table()
+        .context("Failed to create address table")?;
+    db.create_contract_table()
+        .context("Failed to create contract table")?;
 
     // create indexes if they don't exist
     db.create_index("idx_blocks_hash", "blocks", "hash")
@@ -75,6 +79,10 @@ async fn run() -> Result<()> {
         .context("Failed to create txsender index")?;
     db.create_index("idx_transaction_block_index", "transactions", "block_index")
         .context("Failed to create transaction block index")?;
+    db.create_index("idx_address_address", "addresses", "address")
+        .context("Failed to create address index")?;
+    db.create_index("idx_contract_hash", "contracts", "hash")
+        .context("Failed to create contract index")?;
 
     // some setup
     let index_result = db

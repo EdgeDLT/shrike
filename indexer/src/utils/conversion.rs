@@ -1,7 +1,7 @@
 use lib::neo::{base64_to_address, base64_to_hex};
 use serde_json::to_string;
 
-use crate::db::model::{Block, Transaction};
+use crate::db::model::{Address, Block, Contract, Transaction};
 use crate::rpc::models::{
     BlockAppLogResult, BlockResult, TransactionAppLogResult, TransactionResult,
 };
@@ -58,5 +58,30 @@ pub fn convert_transaction_result(
         witnesses: to_string(&t.witnesses).unwrap(),
         stack_result: to_string(&stack).unwrap(),
         notifications: to_string(&notifs).unwrap(),
+    }
+}
+
+pub fn convert_contract_result(
+    notification: String,
+    block_height: u64,
+) -> Contract {
+
+    Contract {
+        block_index: block_height,
+        manifest: "test".to_string(),
+        hash: "test".to_string(),
+        type_: "test".to_string(),
+    }
+}
+
+pub fn convert_address_result(
+    notification: String,
+    block_height: u64,
+) -> Address {
+
+    Address {
+        block_index: block_height,
+        address: "test".to_string(),
+        balance: 0.0,
     }
 }

@@ -9,7 +9,19 @@ use std::sync::RwLock;
 use crate::shared::models::GAS_PRECISION;
 use crate::ConnectionPool;
 
-use super::models::ShrikeStats;
+use super::models::{NetworkStatistics, ShrikeStats};
+
+pub static CURRENT_NETWORK_STATISTICS: Lazy<RwLock<NetworkStatistics>> = Lazy::new(|| {
+    let s = NetworkStatistics {
+        total_transactions: 0,
+        total_addresses: 0,
+        total_contracts: 0,
+        transactions_last_week: 0,
+        addresses_last_week: 0,
+        contracts_last_week: 0,
+    };
+    RwLock::new(s)
+});
 
 pub static CURRENT_STATS: Lazy<RwLock<ShrikeStats>> = Lazy::new(|| {
     let s = ShrikeStats {
@@ -61,18 +73,32 @@ pub async fn set_stats_internal(pool: web::Data<ConnectionPool>) {
 
         let results = tokio::join!(transactions, sysfees, transfers, senders, contracts);
 
+        let total_transactions = results.0.unwrap();
+        let total_contracts = results.4.unwrap();
+
         {
             let mut w = CURRENT_STATS.write().unwrap();
 
             w.total_blocks = blocks;
-            w.total_transactions = results.0.unwrap();
+            w.total_transactions = total_transactions;
             w.total_sysfee = results.1.unwrap();
             w.total_transfers = results.2.unwrap();
             w.total_senders = results.3.unwrap();
-            w.total_contracts = results.4.unwrap();
+            w.total_contracts = total_contracts;
+        }
+
+        {
+            let mut w = CURRENT_NETWORK_STATISTICS.write().unwrap();
+
+            w.total_transactions = total_transactions;
+            w.total_addresses = 0;
+            w.total_contracts = total_contracts;
+            w.transactions_last_week = 0;
+            w.addresses_last_week = 0;
+            w.contracts_last_week = 0;
         }
     } else {
-        // println!("No cache updated needed.")
+        println!("No cache updated needed.")
     }
     println!("Stats refreshed. Current height is {}.", blocks);
 }

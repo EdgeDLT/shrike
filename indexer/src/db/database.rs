@@ -3,7 +3,7 @@ use rusqlite::{params, Connection, Result};
 
 use crate::config::AppConfig;
 
-use super::model::{Block, Transaction};
+use super::model::{Address, Block, Contract, Transaction};
 
 pub struct Database {
     conn: Connection,
@@ -96,6 +96,37 @@ impl Database {
         Ok(result)
     }
 
+    pub fn create_address_table(&self) -> Result<usize> {
+        let result = self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS addresses (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_index         INTEGER NOT NULL,
+            address             TEXT NOT NULL,
+            balance             FLOAT NOT NULL,
+            FOREIGN KEY (block_index) REFERENCES blocks (id)
+        )",
+            [],
+        )?;
+
+        Ok(result)
+    }
+
+    pub fn create_contract_table(&self) -> Result<usize> {
+        let result = self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS contracts (
+            id                  INTEGER PRIMARY KEY AUTOINCREMENT,
+            block_index         INTEGER NOT NULL,
+            hash                TEXT NOT NULL,
+            type                TEXT NOT NULL,
+            manifest            TEXT NOT NULL,
+            FOREIGN KEY (block_index) REFERENCES blocks (id)
+        )",
+            [],
+        )?;
+
+        Ok(result)
+    }
+
     pub fn insert_into_block_table(&self, block: &Block) -> Result<usize> {
         let sql = "INSERT INTO blocks (
             id, hash, size, version, merkle_root, time,
@@ -120,6 +151,62 @@ impl Database {
         )?;
 
         Ok(result)
+    }
+
+    pub fn insert_contracts(
+        &self,
+        contracts: impl Iterator<Item = Contract>,
+    ) -> Result<()> {
+        let tx = self.conn.unchecked_transaction()?;
+
+        let mut stmt = self.conn.prepare_cached(
+            "INSERT INTO contracts (
+            block_index, hash, type
+        ) VALUES (?1, ?2, ?3)",
+        )?;
+
+        for contract in contracts {
+            stmt.execute(params![
+                contract.block_index,
+                contract.hash,
+                contract.type_
+            ])?;
+        }
+
+        let result = tx.commit();
+        if let Err(e) = result {
+            println!("Error committing transaction: {e:?}");
+        }
+
+        Ok(())
+    }
+
+    pub fn insert_addresses(
+        &self,
+        addresses: impl Iterator<Item = Address>,
+    ) -> Result<()> {
+        let tx = self.conn.unchecked_transaction()?;
+
+        let mut stmt = self.conn.prepare_cached(
+            "INSERT INTO addresses (
+            block_index, address, balance
+        ) VALUES (?1, ?2, ?3)",
+        )?;
+
+        for address in addresses {
+            stmt.execute(params![
+                address.block_index,
+                address.address,
+                address.balance
+            ])?;
+        }
+
+        let result = tx.commit();
+        if let Err(e) = result {
+            println!("Error committing transaction: {e:?}");
+        }
+
+        Ok(())
     }
 
     // synced rollback for both tables

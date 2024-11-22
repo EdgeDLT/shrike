@@ -32,6 +32,21 @@ pub struct Block {
     pub witnesses: String,
 }
 
+#[derive(Debug, Clone)]
+pub struct Address {
+    pub block_index: u64,
+    pub address: String,
+    pub balance: f64,
+}
+
+#[derive(Debug, Clone)]
+pub struct Contract {
+    pub block_index: u64,
+    pub hash: String,
+    pub type_: String,
+    pub manifest: String,
+}
+
 impl Block {
     pub fn genesis_block() -> Block {
         Block {
