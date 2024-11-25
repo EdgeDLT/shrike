@@ -869,12 +869,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d4345964bb142484797b161f473a503a434de77149dd8c7427788c6e13379388"
 
 [[package]]
+name = "lazy_static"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
+
+[[package]]
 name = "lib"
 version = "0.1.0"
 dependencies = [
  "base64 0.20.0",
  "directories-next",
  "hex",
+ "lazy_static",
  "once_cell",
  "sha2",
 ]

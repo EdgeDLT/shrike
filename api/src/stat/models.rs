@@ -39,3 +39,13 @@ pub struct ShrikeStats {
     pub total_senders: u64,
     pub total_contracts: u64,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct NetworkStatistics {
+    pub total_transactions: u64,
+    pub total_addresses: u64,
+    pub total_contracts: u64,
+    pub current_week_transactions: u64,
+    pub current_week_addresses: u64,
+    pub current_week_contracts: u64,
+}
