@@ -46,7 +46,7 @@ ProtocolConfiguration:
 ApplicationConfiguration:
   SkipBlockVerification: false
   # LogPath could be set up in case you need stdout logs to some proper file.
-  # LogPath: "./log/neogo.log"
+  LogPath: "./log/neogo.log"
   DBConfiguration:
     Type: "leveldb" #other options: 'inmemory','boltdb'
     # DB type options. Uncomment those you need in case you want to switch DB type.

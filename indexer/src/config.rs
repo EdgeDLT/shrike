@@ -25,7 +25,7 @@ impl AppConfig {
             node_version: String::from("v0.106.3"),
             log_level: String::from("info"),
             batch_size: 25,
-            keep_alive: false,
+            keep_alive: true,
             keep_alive_interval: 5,
             height_limit: 0,
         }
