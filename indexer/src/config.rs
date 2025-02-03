@@ -22,7 +22,7 @@ impl AppConfig {
                 .expect("Failed to convert path")
                 .to_string(),
             node_path: String::from("http://localhost:10332"),
-            node_version: String::from("v0.106.3"),
+            node_version: String::from("v0.107.2"),
             log_level: String::from("info"),
             batch_size: 25,
             keep_alive: true,
